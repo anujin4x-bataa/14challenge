@@ -409,7 +409,7 @@ body{font-family:var(--fn);background:var(--bg);color:var(--t1);min-height:100dv
         <div class="bfield"><label>⚖️ Жин (кг)</label><input type="number" id="bm-w" placeholder="жж.ж" step="0.1"></div>
         <div class="bfield"><label>🩺 Биеийн өөх (%)</label><input type="number" id="bm-f" placeholder="жж.ж" step="0.1"></div>
         <div class="bfield"><label>💪 Булчин (кг)</label><input type="number" id="bm-m" placeholder="жж.ж" step="0.1"></div>
-        <div class="bfield"><label>🫀 Висцерал өөх</label><input type="number" id="bm-v" placeholder="1-30" step="0.5"></div>
+        <div class="bfield"><label>🫀 Дотор өөх</label><input type="number" id="bm-v" placeholder="1-30" step="0.5"></div>
         <div class="bfield"><label>💧 Биеийн ус (%)</label><input type="number" id="bm-wa" placeholder="жж.ж" step="0.1"></div>
         <div class="bfield"><label>🔥 BMR (ккал)</label><input type="number" id="bm-b" placeholder="1200"></div>
       </div>
@@ -537,7 +537,7 @@ const USERS={
     bmi:30.8,
     analysis:'BMI 30.8 · Өөх 29.7% · Дотор өөх 19 — маш өндөр',
     strategy:'Чихэр хасах + хөдөлгөөн нэмэх = амжилт',
-    strategyDetail:'Висцерал өөх таны хамгийн том эрсдэл. Чихэр зогсоох л хамгийн хурдан өөрчлөлт авчирна.',
+    strategyDetail:'Дотор өөх таны хамгийн том эрсдэл. Чихэр зогсоох л хамгийн хурдан өөрчлөлт авчирна.',
     advantages:'Булчин сайн (58.2кг) → хурдан турна · Алхдаг → суурь хөдөлгөөн байна',
     exercise:'8,000–12,000 алхам + 20 мин: squat, push-up, plank',
     meals:{
@@ -825,7 +825,7 @@ async function initApp(){
   document.getElementById('day-ring').style.strokeDashoffset=circ*(1-dayNum/14);
   document.getElementById('day-num').textContent=dayNum;
   document.getElementById('hdr-day').textContent=`${dayNum}-р өдөр`;
-  document.getElementById('hero-dl').textContent=`${dayNum}-р өдөр · 14-с`;
+  document.getElementById('hero-dl').textContent=`${dayNum}-р өдөр · 14 өдөр`;
 
   const mot=MOTIVATIONS[(dayNum-1)%MOTIVATIONS.length];
   document.getElementById('mot-txt').textContent=mot.t;
@@ -1041,7 +1041,7 @@ function renderStrategyCard(){
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:12px">
       ${u.goalWeight?`<div style="background:var(--grns);border-radius:10px;padding:9px;text-align:center"><div style="font-size:17px;font-weight:900;color:var(--grn)">${u.goalWeight}кг</div><div style="font-size:9px;color:var(--t2);font-weight:800;margin-top:2px">ЖИНГИЙН ЗОРИЛГО</div></div>`:''}
       ${u.goalFat?`<div style="background:var(--reds);border-radius:10px;padding:9px;text-align:center"><div style="font-size:17px;font-weight:900;color:var(--red)">${u.goalFat}%</div><div style="font-size:9px;color:var(--t2);font-weight:800;margin-top:2px">ӨӨХ БУУРУУЛАХ</div></div>`:''}
-      ${u.goalVisceral?`<div style="background:var(--orgs);border-radius:10px;padding:9px;text-align:center"><div style="font-size:17px;font-weight:900;color:var(--org)">${u.goalVisceral} level</div><div style="font-size:9px;color:var(--t2);font-weight:800;margin-top:2px">ВИСЦЕРАЛ</div></div>`:''}
+      ${u.goalVisceral?`<div style="background:var(--orgs);border-radius:10px;padding:9px;text-align:center"><div style="font-size:17px;font-weight:900;color:var(--org)">${u.goalVisceral} level</div><div style="font-size:9px;color:var(--t2);font-weight:800;margin-top:2px">Дотор</div></div>`:''}
       ${u.goalMuscle?`<div style="background:var(--blus);border-radius:10px;padding:9px;text-align:center"><div style="font-size:17px;font-weight:900;color:var(--blu)">+${u.goalMuscle}кг</div><div style="font-size:9px;color:var(--t2);font-weight:800;margin-top:2px">БУЛЧИН</div></div>`:''}
     </div>
 
@@ -1195,7 +1195,7 @@ async function renderBody(){
   if(entries.length>0){
     snapCard.style.display='block';
     const lat=entries[entries.length-1][1],prev=entries.length>1?entries[entries.length-2][1]:null;
-    const mets=[{k:'weight',l:'Жин',u:'кг',g:'down',ic:'⚖️'},{k:'fat',l:'Өөх%',u:'%',g:'down',ic:'🩺'},{k:'muscle',l:'Булчин',u:'кг',g:'up',ic:'💪'},{k:'visceral',l:'Висцерал',u:'',g:'down',ic:'🫀'},{k:'water',l:'Ус%',u:'%',g:'up',ic:'💧'},{k:'bmr',l:'BMR',u:'ккал',g:'',ic:'🔥'}];
+    const mets=[{k:'weight',l:'Жин',u:'кг',g:'down',ic:'⚖️'},{k:'fat',l:'Өөх%',u:'%',g:'down',ic:'🩺'},{k:'muscle',l:'Булчин',u:'кг',g:'up',ic:'💪'},{k:'visceral',l:'Дотор',u:'',g:'down',ic:'🫀'},{k:'water',l:'Ус%',u:'%',g:'up',ic:'💧'},{k:'bmr',l:'BMR',u:'ккал',g:'',ic:'🔥'}];
     snap.innerHTML=`<div class="bsg">${mets.map(m=>{
       const v=lat[m.k];if(!v)return '';
       const pv=prev?.[m.k];const diff=pv!=null?(v-pv).toFixed(1):null;
