@@ -473,7 +473,7 @@ const DEFAULT_TASKS=[
 ];
 
 const MOTIVATIONS=[
-  {t:'Аливаа ажлыг эхлүүлнэ гэдэг ажлынхаа 50%- ийг хийсэн гэж бод',a:'Монгол цэцэн үг'},
+  {t:'Аливаа ажлыг эхлүүлнэ гэдэг ажлынхаа 50%-ийг хийсэн гэсэн үг',a:'Монгол цэцэн үг'},
   {t:'Биеийн эрүүл мэнд бол хамгийн том баялаг.',a:'Вирджил'},
   {t:'Хэцүү замаар явсан хүн хамгийн гоё газарт хүрдэг.',a:'Зиг Зиглар'},
   {t:'Амжилт бол дадал хэвшлийн нийлбэр.',a:'Аристотель'},
@@ -615,7 +615,7 @@ async function renderScore(){
   document.getElementById('hero-sub').textContent=`· ${done}/${total}`;
   document.getElementById('hero-bar').style.width=pct+'%';
   document.getElementById('hero-ht').textContent=pct===100?'🎉 Өнөөдөр бүгдийг биелүүллээ!':`${total-done} даалгавар үлдлээ`;
-  document.getElementById('hero-remain').textContent=pct<100?`${total-done} үлдлээ`:'';
+  document.getElementById('hero-remain').textContent=pct<100?`${total-done} даалгавар үлдлээ`:'';
   document.getElementById('streak-pill').textContent=`🔥 ${streak} өдөр тасралтгүй`;
   if(pct===100){const wk='win_'+td();if(!localStorage.getItem(wk)){localStorage.setItem(wk,'1');setTimeout(()=>showWin(streak),700);}}
 }
