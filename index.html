@@ -211,6 +211,7 @@ body{font-family:var(--fn);background:var(--bg);color:var(--t1);min-height:100dv
 .wi{position:relative;z-index:502;width:100%;max-width:360px}
 @keyframes winPop{0%{transform:scale(.3);opacity:0}65%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
 @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
 /* TOAST — above bottom nav */
 .toast{position:fixed;bottom:calc(var(--nh) + 10px);left:50%;transform:translateX(-50%) translateY(10px);background:rgba(28,28,26,.9);color:#fff;padding:10px 18px;border-radius:24px;font-size:13px;font-weight:700;z-index:400;opacity:0;transition:all .22s;pointer-events:none;white-space:nowrap;backdrop-filter:blur(8px)}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
@@ -240,11 +241,13 @@ body{font-family:var(--fn);background:var(--bg);color:var(--t1);min-height:100dv
     <div class="auth-users">
       <button class="user-btn bataa" onclick="loginSuccess('bataa')">
         <div class="uav">👨</div>
-        <div><div class="un">Батаа</div><div class="us">Чихэр хасаж, идэвхтэй хөдөлгөөнөөр өөх хасна </div></div>
+        <div><div class="un">Батаа</div><div class="us">Чихэр тасарч, өөх буурна — 14 хоног л хангалттай</div></div>
+        <div style="font-size:18px;margin-left:auto;color:var(--grn)">›</div>
       </button>
       <button class="user-btn byambaa" onclick="loginSuccess('byambaa')">
         <div class="uav">👩</div>
-        <div><div class="un">Бямбажав</div><div class="us">Идэвхтэй хөдөлгөөн, эрүүл хооллолт биеийг өөрчилнө</div></div>
+        <div><div class="un">Бямбажав</div><div class="us">Хөдөлж, уураг идэж, биеийг өөрчилнө</div></div>
+        <div style="font-size:18px;margin-left:auto;color:var(--grn)">›</div>
       </button>
     </div>
   </div>
@@ -268,6 +271,7 @@ body{font-family:var(--fn);background:var(--bg);color:var(--t1);min-height:100dv
     </div>
     <div class="hdr-actions">
       <button class="hdr-btn" onclick="syncToSupabase()">☁️ Sync</button>
+      <button class="hdr-btn" onclick="confirmClearData()" style="color:var(--red);border-color:var(--red)">🗑️</button>
       <button class="hdr-btn" onclick="logout()">Гарах</button>
     </div>
   </div>
@@ -285,7 +289,7 @@ body{font-family:var(--fn);background:var(--bg);color:var(--t1);min-height:100dv
           <div class="hero-rc"><div class="hero-rn" id="day-num">1</div><div class="hero-rs">ХОНОГ</div></div>
         </div>
         <div>
-          <div class="hero-badge" id="hero-dl">1-р өдөр · 14 өдөр</div>
+          <div class="hero-badge" id="hero-dl">1-р өдөр · 14 өдөр </div>
           <div style="display:flex;align-items:baseline;gap:2px;margin-bottom:5px">
             <div class="hero-pct" id="hero-pct">0%</div>
             <div class="hero-pct-sub" id="hero-sub">· 0/7</div>
@@ -304,12 +308,45 @@ body{font-family:var(--fn);background:var(--bg);color:var(--t1);min-height:100dv
       <div class="mot-txt" id="mot-txt">Өнөөдрийн жижиг алхам нь маргаашийн том ялалт болно.</div>
       <div class="mot-auth" id="mot-auth"></div>
     </div>
+
+    <!-- Personal strategy card — collapsible -->
+    <div id="strategy-card" class="card" style="border-left:4px solid var(--grn);cursor:pointer" onclick="toggleStrategyCard()">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div style="display:flex;align-items:center;gap:9px">
+          <div id="strategy-card-avatar" style="font-size:22px">👨</div>
+          <div>
+            <div id="strategy-card-title" style="font-size:13px;font-weight:800;color:var(--t1)">Батаагийн төлөвлөгөө</div>
+            <div id="strategy-card-sub" style="font-size:11px;color:var(--grn);font-weight:700;margin-top:1px"></div>
+          </div>
+        </div>
+        <div id="strategy-card-chevron" style="font-size:16px;color:var(--t3);transition:transform .2s">›</div>
+      </div>
+      <div id="strategy-card-body" style="display:none;margin-top:14px;border-top:1px solid var(--brd);padding-top:14px"></div>
+    </div>
+
     <div class="card">
       <div class="ctitle-row">
         <div class="ctitle">Өнөөдрийн даалгаврууд</div>
-        <button class="ic-btn" onclick="openTaskManager()">✏️ Засах</button>
+        <button class="ic-btn" onclick="openTaskManager()" style="z-index:1">✏️ Засах</button>
       </div>
+
+      <!-- Dopamine Detox Toggle — ЭХЭНД -->
+      <div style="margin-bottom:10px;padding:11px 13px;border-radius:12px;background:var(--surf2);border:1px solid var(--brd);display:flex;align-items:center;gap:11px">
+        <span style="font-size:19px">📵</span>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:700;color:var(--t1)">Dopamine Detox</div>
+          <div style="font-size:11px;color:var(--t2);margin-top:1px" id="detox-toggle-desc">OFF — нийгмийн сүлжээ хязгаарлахгүй</div>
+        </div>
+        <button id="detox-toggle-btn" onclick="toggleDetoxMode()" style="min-width:52px;padding:6px 11px;border-radius:18px;border:none;font-size:12px;font-weight:800;cursor:pointer;font-family:var(--fn);transition:all .2s;background:var(--surf3);color:var(--t2)">OFF</button>
+      </div>
+
       <div id="task-list"></div>
+
+      <!-- 20 мин дасгал хэсэг -->
+      <div style="margin-top:10px;border-top:1px solid var(--brd);padding-top:10px">
+        <div style="font-size:10px;font-weight:800;color:var(--t3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:8px" id="exercise-title">💪 20 мин дасгал</div>
+        <div id="exercise-list" style="display:grid;grid-template-columns:1fr 1fr;gap:6px"></div>
+      </div>
     </div>
   </div>
 
@@ -349,7 +386,8 @@ body{font-family:var(--fn);background:var(--bg);color:var(--t1);min-height:100dv
       <div class="meal-list-wrap" id="meal-list"></div>
     </div>
     <div class="card">
-      <div class="ctitle">🥗 Эрүүл хооллох</div>
+      <div class="ctitle" id="food-guide-title">🥗 Эрүүл хооллох</div>
+      <div id="food-personal-meals" style="margin-bottom:12px"></div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:12px">
         <div style="background:#EFF6FF;border:1.5px solid #BFDBFE;border-radius:12px;padding:12px"><div style="font-size:11px;font-weight:800;color:var(--blu);margin-bottom:5px">👨 Аав</div><div style="font-size:11px;color:var(--t1);line-height:1.6">Чихэр бүр зогсоох<br>Хоолны хэмжээ багасгах</div></div>
         <div style="background:#FDF2F8;border:1.5px solid #F9A8D4;border-radius:12px;padding:12px"><div style="font-size:11px;font-weight:800;color:#BE185D;margin-bottom:5px">👩 Ээж</div><div style="font-size:11px;color:var(--t1);line-height:1.6">Уураг нэмэх<br>Хөдөлгөөн заавал</div></div>
@@ -423,8 +461,32 @@ body{font-family:var(--fn);background:var(--bg);color:var(--t1);min-height:100dv
     <button class="nav-btn" onclick="switchTab('body',this)"><div class="nav-icon">⚖️</div><div class="nav-lbl">Бие</div><div class="nav-dot"></div></button>
     <button class="nav-btn" onclick="switchTab('history',this)"><div class="nav-icon">📅</div><div class="nav-lbl">Түүх</div><div class="nav-dot"></div></button>
     <button class="nav-btn" onclick="switchTab('compare',this)"><div class="nav-icon">📊</div><div class="nav-lbl">Харьцуул</div><div class="nav-dot"></div></button>
+    <button class="nav-btn" onclick="switchTab('awards',this)"><div class="nav-icon">🏆</div><div class="nav-lbl">Шагнал</div><div class="nav-dot"></div></button>
   </nav>
 </div>
+
+  <!-- AWARDS TAB -->
+  <div class="tab-c" id="tab-awards">
+    <div id="awards-summary-card"></div>
+    <div class="card">
+      <div class="ctitle">Бүх шагнал</div>
+      <div id="awards-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px"></div>
+    </div>
+    <div class="card">
+      <div class="ctitle">Идэвхийн хуваарь</div>
+      <div id="awards-heatmap" style="display:flex;flex-wrap:wrap;gap:4px;margin-top:2px"></div>
+      <div style="display:flex;gap:8px;margin-top:10px;align-items:center">
+        <span style="font-size:10px;color:var(--t3)">Бага</span>
+        <div style="display:flex;gap:3px">
+          <div style="width:12px;height:12px;border-radius:3px;background:var(--surf3)"></div>
+          <div style="width:12px;height:12px;border-radius:3px;background:#9FDCC0"></div>
+          <div style="width:12px;height:12px;border-radius:3px;background:#4FC490"></div>
+          <div style="width:12px;height:12px;border-radius:3px;background:var(--grn)"></div>
+        </div>
+        <span style="font-size:10px;color:var(--t3)">Их</span>
+      </div>
+    </div>
+  </div>
 
 <!-- TASK MANAGER MODAL -->
 <div class="modal-ov" id="task-modal">
@@ -455,25 +517,71 @@ body{font-family:var(--fn);background:var(--bg);color:var(--t1);min-height:100dv
 <div class="toast" id="toast"></div>
 
 <script>
-const SB_URL='https://rgoceacbeytugyklilcx.supabase.co';
-const SB_KEY='sb_publishable_ghVbc3ErkJ847hAr76YSnA_4S4SKfzE';
+const SB_URL='https://rgsorfpjktbkgkfupzfk.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJnc29yZnBqa3Ria2drZnVwemZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzMzMTUzNzEsImV4cCI6MjA0ODg5MTM3MX0.1-nEaB-yCl7pGgPRMb5Xf-M_Y4kX3Bq5FsJJqfuvDA';
+
 const USERS={
-  bataa:{name:'Батаа',avatar:'👨',cls:'bataa',steps:8000},
-  byambaa:{name:'Бямбажав',avatar:'👩',cls:'byambaa',steps:6000}
+  bataa:{
+    name:'Батаа', avatar:'👨', cls:'bataa', steps:8000,
+    pass:'Bataa@2026',
+    weight:86.8, fatPct:29.7, visceral:19, muscle:58.2,
+    goalWeight:-2.5, goalFat:-2, goalVisceral:-2,
+    bmi:30.8,
+    analysis:'BMI 30.8 · Өөх 29.7% · Висцерал өөх 19 — маш өндөр',
+    strategy:'Чихэр + их хоол багасгах = 70% үр дүн',
+    strategyDetail:'Висцерал өөх таны хамгийн том эрсдэл. Чихэр зогсоох л хамгийн хурдан өөрчлөлт авчирна.',
+    advantages:'Булчин сайн (58.2кг) → хурдан турна · Алхдаг → суурь хөдөлгөөн байна',
+    exercise:'8,000–12,000 алхам + 20 мин: squat, push-up, plank',
+    meals:{
+      morning:'Өндөг 2ш + хар талх / овьёос · Цай чихэргүй',
+      lunch:'Мах + ногоо · Будаа бага · Шөл OK',
+      dinner:'Хөнгөн: салат + тахиа / тараг (20:00-с өмнө)',
+    },
+    avoid:'Чихэр · Ундаа · Орой 20:00-с хойш хоол · Цагаан талх',
+    golden:'Чихэр идэх хүсэл гарвал → алим / тараг',
+    result14:'−2~4кг · Гэдэс мэдэгдэхүйц багасна',
+  },
+  byambaa:{
+    name:'Бямбажав', avatar:'👩', cls:'byambaa', steps:6000,
+    pass:'Byambaa@2026',
+    weight:62.5, fatPct:35.3, visceral:6.5, muscle:36.8,
+    goalWeight:-1.5, goalFat:-3, goalMuscle:0.7,
+    bmi:24.4,
+    analysis:'BMI 24.4 хэвийн · Гэхч өөх 35.3% — "Skinny fat"',
+    strategy:'Хөдөлгөөн нэмэх + уураг нэмэх = шийдэл',
+    strategyDetail:'Жин хэвийн ч биеийн өөхний хувь өндөр. Булчин нэмэх нь метаболизмыг дэмжинэ.',
+    advantages:'Жин бага → хурдан өөрчлөгдөнө · Висцерал өөх хэвийн (6.5)',
+    exercise:'6,000–8,000 алхам + 15-20 мин: squat, glute bridge, plank',
+    meals:{
+      morning:'Тараг + жимс / өндөг',
+      lunch:'Мах + ногоо · Будаа бага',
+      dinner:'Хөнгөн: салат / тараг',
+    },
+    avoid:'Чихэр · Ундаа · Орой хүнд хоол · Будаа их',
+    golden:'Өдөр бүр уураг заавал: өндөг, тахиа, тараг',
+    result14:'Бие чангарна · Өөх багасч shape өөрчлөгдөнө',
+  }
 };
 
 const DEFAULT_TASKS=[
-  {id:'steps',icon:'🚶',name:'Алхалт',getDesc:u=>`${USERS[u]?.steps?.toLocaleString()}+ алхам`},
-  {id:'water',icon:'💧',name:'Ус уух',desc:'2 литр цэвэр ус'},
-  {id:'nosugar',icon:'🚫',name:'Чихэр огт хэрэглэхгүй байх',desc:'Чихэр, чихэрлэг ундаа'},
-  {id:'food',icon:'🥗',name:'Эрүүл хооллох',desc:'Зөв хоол идэж бүртгэх'},
-  {id:'sleep',icon:'🛌',name:'7-8 цаг унтах',desc:'Хангалттай нойр'},
-  {id:'stretch',icon:'🧘',name:'Сунгалт',desc:'5 мин сунгалт / амьсгал'},
-  {id:'detox',icon:'📵',name:'Dopamine Detox',desc:'FB / IG / TikTok үзэхгүй'},
+  {id:'steps',   icon:'🚶',name:'Алхалт',        getDesc:u=>`${USERS[u]?.steps?.toLocaleString()}+ алхам`},
+  {id:'water',   icon:'💧',name:'Ус уух',          desc:'2 литр цэвэр ус'},
+  {id:'nosugar', icon:'🚫',name:'Чихэр огт хэрэглэхгүй байх',   desc:'Чихэр, чихэрлэг ундаа'},
+  {id:'food',    icon:'🥗',name:'Эрүүл хооллох',  desc:'Зөв хоол идэж бүртгэх'},
+  {id:'sleep',   icon:'🛌',name:'7-8 цаг унтах',  desc:'Хангалттай нойр'},
+  {id:'stretch', icon:'🧘',name:'Сунгалт',         desc:'5 мин сунгалт / амьсгал'},
+  {id:'exercise',icon:'💪',name:'20 мин дасгал',  getDesc:u=>USERS[u]?.name==='Батаа'?'Squat · Push-up · Plank':'Squat · Glute bridge · Plank'},
 ];
+const DETOX_TASK={id:'detox',icon:'📵',name:'NO FB / IG / TikTok',desc:'Нийгмийн сүлжээ үзэхгүй'};
+function getTasks(){
+  const base=window._tasks||DEFAULT_TASKS;
+  if(window._tasks) return base;
+  if(CU&&getDetoxOn()) return [...base,DETOX_TASK];
+  return base;
+}
 
 const MOTIVATIONS=[
-  {t:'Аливаа ажлыг эхлүүлнэ гэдэг ажлынхаа 50%-ийг хийсэн гэсэн үг',a:'Монгол цэцэн үг'},
+  {t:'Аливаа ажлыг эхлүүлнэ гэдэг ажлынхаа 50%-ийг хийсэн гэсэн үг'},
   {t:'Биеийн эрүүл мэнд бол хамгийн том баялаг.',a:'Вирджил'},
   {t:'Хэцүү замаар явсан хүн хамгийн гоё газарт хүрдэг.',a:'Зиг Зиглар'},
   {t:'Амжилт бол дадал хэвшлийн нийлбэр.',a:'Аристотель'},
@@ -481,8 +589,8 @@ const MOTIVATIONS=[
   {t:'Таны бие 14 хоногт өөрчлөгдөж чадна — зөвхөн үйлдэл л хэрэгтэй.',a:''},
   {t:'Чихэр нэг удаа татгалзана гэдэг бол өнөөдрийг ялна гэсэн үг.',a:''},
   {t:'Жижиг дадал хэвшил том үр дүн авчирдаг.',a:'Жеймс Клир'},
-  {t:'Хүч чинь гадаад орчинд биш, доторх биед чинь байдаг.',a:'Марк Аврелий'},
-  {t:'Өнөөдрийн хамгийн сайн хувилбараа бүтээ.',a:''},
+  {t:'Хүч чинь гадаад дэлхийд биш, доторх шийдвэрт байдаг.',a:'Марк Аврелий'},
+  {t:'Өчигдрийн чиний хамгийн сайн хувилбар болж яв.',a:''},
   {t:'Хөдөлгөөн бол амьдрал, зогсонги байдал бол үхэл.',a:'Гиппократ'},
   {t:'14 хоногийн дараа ямар их өөрчлөгдсөнөө харна.',a:''},
   {t:'Чихэр биш, амжилтаа чихэрлэг бол.',a:''},
@@ -524,9 +632,170 @@ async function syncToSupabase(){
   toast('✅ Sync амжилттай!');
 }
 
-// AUTH
-async function loginSuccess(u){CU=u;localStorage.setItem('hc14_sess',u);showScreen('app-screen');await initApp();}
+// ==================== ACHIEVEMENTS ====================
+const ACHIEVEMENTS=[
+  {id:'start',     icon:'🌱',name:'Сорилт эхлэлээ',     desc:'Аппд нэвтэрч бүртгэлтэй болсон',    check:s=>s.totalDays>=1,   pts:20},
+  {id:'perfect1',  icon:'⭐',name:'Анхны 100%',          desc:'Нэг өдөр бүх task биелүүл',          check:s=>s.perfectDays>=1, pts:30},
+  {id:'streak3',   icon:'🔥',name:'3 хоног тасралтгүй', desc:'Гурав дараалсан өдөр ≥50% биелүүл',  check:s=>s.streak>=3,      pts:40},
+  {id:'nosugar3',  icon:'🚫',name:'3 хоног чихэргүй',   desc:'3 хоног чихэр идэхгүй байх',         check:s=>s.nosugarDays>=3, pts:30},
+  {id:'detox3',    icon:'📵',name:'3 хоног detox',       desc:'3 хоног FB/IG/TikTok үзэхгүй',       check:s=>s.detoxDays>=3,   pts:40},
+  {id:'food3',     icon:'🥗',name:'3 өдөр хоол бүртгэв',desc:'3 өдөр хоолоо бүртгэ',               check:s=>s.foodDays>=3,    pts:30},
+  {id:'steps7',    icon:'🚶',name:'7 хоног алхалт',      desc:'7 хоног алхалтын зорилго биелүүл',   check:s=>s.stepsDays>=7,   pts:40},
+  {id:'sleep5',    icon:'😴',name:'5 хоног сайн нойр',   desc:'5 хоног унтах task биелүүл',         check:s=>s.sleepDays>=5,   pts:30},
+  {id:'weight1',   icon:'⚖️',name:'Анхны хэмжилт',      desc:'Жин оруулсан',                        check:s=>s.weightEntries>=1,pts:20},
+  {id:'perfect5',  icon:'🌟',name:'5 төгс өдөр',         desc:'5 удаа 100% биелүүл',                check:s=>s.perfectDays>=5, pts:50},
+  {id:'stretch5',  icon:'🌿',name:'5 өдөр сунгалт',      desc:'5 хоног сунгалтын task биелүүл',     check:s=>s.stretchDays>=5, pts:30},
+  {id:'streak7',   icon:'⚡',name:'7 хоног тасралтгүй', desc:'7 дараалсан өдөр ≥50% биелүүл',      check:s=>s.streak>=7,      pts:50},
+  {id:'nosugar7',  icon:'🏅',name:'7 хоног чихэргүй',   desc:'7 хоног чихэр идэхгүй',              check:s=>s.nosugarDays>=7, pts:60},
+  {id:'detox7',    icon:'🧘',name:'7 хоног detox',       desc:'7 хоног Dopamine Detox',              check:s=>s.detoxDays>=7,   pts:60},
+  {id:'food10',    icon:'🥦',name:'10 өдөр эрүүл хоол', desc:'10 өдөр хоол бүртгэ',                check:s=>s.foodDays>=10,   pts:70},
+  {id:'steps14',   icon:'🏃',name:'14 хоног алхалт',     desc:'14 хоног бүр алхалт хийх',           check:s=>s.stepsDays>=14,  pts:80},
+  {id:'weight5',   icon:'📉',name:'5 удаа хэмжилт',      desc:'5 удаа жин хэмжсэн',                check:s=>s.weightEntries>=5,pts:50},
+  {id:'perfect14', icon:'💎',name:'14 төгс өдөр',        desc:'14 удаа 100% биелүүл',               check:s=>s.perfectDays>=14,pts:100},
+  {id:'nosugar14', icon:'🦷',name:'14 хоног чихэргүй',   desc:'14 хоног бүр чихэр идэхгүй',         check:s=>s.nosugarDays>=14,pts:70},
+  {id:'streak14',  icon:'👑',name:'14 хоног байлдан!',   desc:'Бүх 14 хоногийг дуусгах',             check:s=>s.streak>=14,     pts:100},
+];
+
+function calcAchStats(habits,bm){
+  const today=new Date(td()),tasks=getTasks();
+  let streak=0,perfectDays=0,foodDays=0,nosugarDays=0,stepsDays=0,sleepDays=0,detoxDays=0,stretchDays=0,exerciseDays=0,totalDays=0;
+  for(let i=0;i<14;i++){
+    const d=new Date(today);d.setDate(d.getDate()-i);
+    const key=d.toISOString().split('T')[0];
+    const h=habits[key]||{};
+    const done=tasks.filter(t=>h[t.id]).length;
+    if(done>0||habits[key])totalDays++;
+    if(done===tasks.length&&tasks.length>0)perfectDays++;
+    if(h.food)foodDays++;
+    if(h.nosugar)nosugarDays++;
+    if(h.steps)stepsDays++;
+    if(h.sleep)sleepDays++;
+    if(h.detox)detoxDays++;if(h.stretch)stretchDays++;if(h.exercise)exerciseDays++;
+    if(i===0||streak===i){if(done>=Math.ceil(tasks.length/2))streak++;}
+  }
+  return{streak,perfectDays,foodDays,nosugarDays,stepsDays,sleepDays,detoxDays,stretchDays,exerciseDays,totalDays,weightEntries:Object.keys(bm||{}).length};
+}
+
+async function renderAwards(){
+  const habits=await sbLoad(CU,'habits')||{};
+  const bm=await sbLoad(CU,'bodymetrics')||{};
+  const s=calcAchStats(habits,bm);
+  const unlocked=ACHIEVEMENTS.filter(a=>a.check(s));
+  const locked=ACHIEVEMENTS.filter(a=>!a.check(s));
+  const pts=unlocked.reduce((t,a)=>t+a.pts,0);
+  const maxPts=ACHIEVEMENTS.reduce((t,a)=>t+a.pts,0);
+
+  // Summary
+  const sumCard=document.getElementById('awards-summary-card');
+  sumCard.className='card';
+  sumCard.innerHTML=`
+    <div style="display:flex;align-items:center;gap:14px">
+      <div style="width:58px;height:58px;border-radius:16px;background:linear-gradient(135deg,#FEF9E0,#FDE68A);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;box-shadow:0 3px 12px rgba(212,168,32,.2)">🏆</div>
+      <div style="flex:1">
+        <div style="font-size:10px;font-weight:800;color:var(--t3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:2px">Нийт оноо</div>
+        <div style="font-size:28px;font-weight:900;color:var(--t1);line-height:1">${pts}<span style="font-size:13px;color:var(--t2);font-weight:600"> / ${maxPts}</span></div>
+        <div style="height:5px;background:var(--surf3);border-radius:3px;overflow:hidden;margin-top:8px"><div style="height:100%;width:${Math.round(pts/maxPts*100)}%;background:linear-gradient(90deg,#E9B74A,var(--ylw));border-radius:3px"></div></div>
+      </div>
+      <div style="text-align:center;background:var(--grns);border-radius:12px;padding:8px 12px">
+        <div style="font-size:22px;font-weight:900;color:var(--grn)">${unlocked.length}</div>
+        <div style="font-size:9px;font-weight:800;color:var(--t2);text-transform:uppercase;letter-spacing:.3px">/ ${ACHIEVEMENTS.length}<br>шагнал</div>
+      </div>
+    </div>`;
+
+  // Grid
+  document.getElementById('awards-grid').innerHTML=[...unlocked,...locked].map(a=>{
+    const on=a.check(s);
+    return `<div style="padding:13px;border-radius:14px;border:1.5px solid ${on?'#FDE68A':'var(--brd)'};background:${on?'linear-gradient(135deg,#FFFBEB,#FEFCE8)':'var(--surf2)'};position:relative;${on?'box-shadow:0 2px 8px rgba(212,168,32,.12)':''}">
+      <div style="font-size:26px;margin-bottom:5px;${on?'':'filter:grayscale(1);opacity:.3'}">${a.icon}</div>
+      <div style="font-size:12px;font-weight:800;color:${on?'var(--t1)':'var(--t3)'};line-height:1.3;margin-bottom:2px">${a.name}</div>
+      <div style="font-size:10px;color:${on?'var(--t2)':'var(--t3)'};line-height:1.4">${a.desc}</div>
+      <div style="position:absolute;top:9px;right:9px;font-size:9px;font-weight:800;color:${on?'var(--ylw)':'var(--t3)'};background:${on?'#FEF3C7':'var(--surf3)'};padding:2px 6px;border-radius:8px">+${a.pts}</div>
+      ${on?'<div style="position:absolute;bottom:9px;right:9px;font-size:12px;color:var(--grn);font-weight:900">✓</div>':''}
+    </div>`;
+  }).join('');
+
+  // Heatmap
+  const hm=document.getElementById('awards-heatmap');
+  hm.innerHTML='';
+  const today2=new Date(td()),tasks=getTasks();
+  for(let i=13;i>=0;i--){
+    const d=new Date(today2);d.setDate(d.getDate()-i);
+    const key=d.toISOString().split('T')[0];
+    const h=habits[key]||{};
+    const done=tasks.filter(t=>h[t.id]).length;
+    const pct=tasks.length>0?done/tasks.length:0;
+    const bg=pct===0?'var(--surf3)':pct<0.5?'#9FDCC0':pct<1?'#4FC490':'var(--grn)';
+    const el=document.createElement('div');
+    el.title=`${fmtDate(key)}: ${done}/${tasks.length}`;
+    el.style.cssText=`width:18px;height:18px;border-radius:4px;background:${bg};cursor:default;flex-shrink:0`;
+    hm.appendChild(el);
+  }
+}
+
+async function checkNewAch(){
+  const habits=await sbLoad(CU,'habits')||{};
+  const bm=await sbLoad(CU,'bodymetrics')||{};
+  const s=calcAchStats(habits,bm);
+  const saved=JSON.parse(localStorage.getItem('hc14_'+CU+'_ach')||'[]');
+  for(const a of ACHIEVEMENTS){
+    if(a.check(s)&&!saved.includes(a.id)){
+      saved.push(a.id);
+      localStorage.setItem('hc14_'+CU+'_ach',JSON.stringify(saved));
+      showAchToast(a);
+      await new Promise(r=>setTimeout(r,600));
+    }
+  }
+}
+
+function showAchToast(a){
+  const el=document.createElement('div');
+  el.style.cssText=`position:fixed;bottom:calc(var(--nh)+14px);left:50%;transform:translateX(-50%) translateY(20px);background:linear-gradient(135deg,#1C1C1A,#2A2A28);color:#fff;padding:12px 18px;border-radius:16px;z-index:500;opacity:0;transition:all .35s cubic-bezier(.34,1.3,.64,1);box-shadow:0 8px 24px rgba(0,0,0,.25);display:flex;align-items:center;gap:12px;white-space:nowrap;border:1.5px solid #3A3A38`;
+  el.innerHTML=`<span style="font-size:26px">${a.icon}</span><div><div style="font-size:10px;font-weight:800;color:#FDE68A;letter-spacing:.4px;text-transform:uppercase">Шагнал авлаа!</div><div style="font-size:13px;font-weight:800;margin-top:1px">${a.name}</div><div style="font-size:11px;color:#9A9A92;margin-top:1px">+${a.pts} оноо</div></div>`;
+  document.body.appendChild(el);
+  setTimeout(()=>{el.style.opacity='1';el.style.transform='translateX(-50%) translateY(0)'},50);
+  setTimeout(()=>{el.style.opacity='0';el.style.transform='translateX(-50%) translateY(20px)';setTimeout(()=>el.remove(),400)},3500);
+}
+
+// ==================== AUTH ====================
+async function loginSuccess(u){
+  CU=u;
+  localStorage.setItem('hc14_sess',u);
+  showScreen('app-screen');
+  await initApp();
+}
 function logout(){CU=null;localStorage.removeItem('hc14_sess');showScreen('auth-screen');}
+
+// ==================== DETOX TOGGLE ====================
+function getDetoxOn(){return localStorage.getItem('hc14_'+CU+'_detox')==='1';}
+function setDetoxOn(v){localStorage.setItem('hc14_'+CU+'_detox',v?'1':'0');}
+
+function toggleDetoxMode(){
+  const on=!getDetoxOn();
+  setDetoxOn(on);
+  updateDetoxUI();
+  // Rebuild tasks: detox task now appears/disappears dynamically based on DEFAULT_TASKS
+  // The detox task is always in DEFAULT_TASKS; toggle just shows/hides a card indicator
+  renderTasks();renderScore();
+  toast(on?'📵 Dopamine Detox асаалаа!':'📵 Dopamine Detox унтрааллаа');
+}
+
+function updateDetoxUI(){
+  const on=getDetoxOn();
+  const btn=document.getElementById('detox-toggle-btn');
+  const desc=document.getElementById('detox-toggle-desc');
+  if(!btn||!desc)return;
+  if(on){
+    btn.textContent='ON';
+    btn.style.background='var(--grn)';btn.style.color='#fff';
+    desc.textContent='ON — FB / IG / TikTok үзэхгүй';
+    desc.style.color='var(--grn)';
+  } else {
+    btn.textContent='OFF';
+    btn.style.background='var(--surf3)';btn.style.color='var(--t2)';
+    desc.textContent='OFF — нийгмийн сүлжээ хязгаарлахгүй';
+    desc.style.color='var(--t2)';
+  }
+}
 
 // INIT
 async function initApp(){
@@ -548,14 +817,18 @@ async function initApp(){
   document.getElementById('day-ring').style.strokeDashoffset=circ*(1-dayNum/14);
   document.getElementById('day-num').textContent=dayNum;
   document.getElementById('hdr-day').textContent=`${dayNum}-р өдөр`;
-  document.getElementById('hero-dl').textContent=`${dayNum}-р өдөр · 14`;
+  document.getElementById('hero-dl').textContent=`${dayNum}-р өдөр · 14-с`;
 
   const mot=MOTIVATIONS[(dayNum-1)%MOTIVATIONS.length];
   document.getElementById('mot-txt').textContent=mot.t;
   document.getElementById('mot-auth').textContent=mot.a?`— ${mot.a}`:'';
   document.getElementById('food-date').textContent=fmtDate(td());
 
+  updateDetoxUI();
+  renderExercise();
   await renderScore();await renderTasks();await renderMeals();await renderBody();await renderHistory();
+  renderStrategyCard();
+  renderPersonalMeals();
 
   document.getElementById('meal-type-tags').addEventListener('click',e=>{
     const tag=e.target.closest('.mtag');if(!tag)return;
@@ -576,8 +849,7 @@ async function finishSetup(){
   showScreen('app-screen');await initApp();
 }
 
-// TASKS
-const getTasks=()=>window._tasks||DEFAULT_TASKS;
+
 
 async function renderTasks(){
   const habits=await sbLoad(CU,'habits')||{};
@@ -602,6 +874,8 @@ async function toggleTask(id){
   await sbSave(CU,'habits',habits);
   await renderTasks();await renderScore();
   if(habits[td()][id]){const t=getTasks().find(x=>x.id===id);if(t)toast(`✅ ${t.name}!`);}
+  // Check for new achievements silently
+  checkNewAch();
 }
 
 async function renderScore(){
@@ -615,7 +889,7 @@ async function renderScore(){
   document.getElementById('hero-sub').textContent=`· ${done}/${total}`;
   document.getElementById('hero-bar').style.width=pct+'%';
   document.getElementById('hero-ht').textContent=pct===100?'🎉 Өнөөдөр бүгдийг биелүүллээ!':`${total-done} даалгавар үлдлээ`;
-  document.getElementById('hero-remain').textContent=pct<100?`${total-done}`:'';
+  document.getElementById('hero-remain').textContent=pct<100?`${total-done} үлдлээ`:'';
   document.getElementById('streak-pill').textContent=`🔥 ${streak} өдөр тасралтгүй`;
   if(pct===100){const wk='win_'+td();if(!localStorage.getItem(wk)){localStorage.setItem(wk,'1');setTimeout(()=>showWin(streak),700);}}
 }
@@ -629,6 +903,7 @@ function switchTab(tab, btn){
   if(el) el.classList.add('active');
   if(tab==='compare') renderCompare();
   if(tab==='history') renderHistory();
+  if(tab==='awards') renderAwards();
 }
 
 function calcStreak(habits){
@@ -710,10 +985,126 @@ async function addMeal(){
   toast(`✅ "${name}" бүртгэлээ`);
 }
 
+function toggleStrategyCard(){
+  const body=document.getElementById('strategy-card-body');
+  const chevron=document.getElementById('strategy-card-chevron');
+  const open=body.style.display==='none';
+  body.style.display=open?'block':'none';
+  chevron.style.transform=open?'rotate(90deg)':'';
+}
+
+function renderStrategyCard(){
+  const u=USERS[CU];
+  const isBataa=CU==='bataa';
+  const accent=isBataa?'var(--red)':'#BE185D';
+  const bg=isBataa?'#FEF2F2':'#FDF2F8';
+  const brd=isBataa?'#FECACA':'#F9A8D4';
+
+  // Update collapsed header
+  const av=document.getElementById('strategy-card-avatar');
+  const ttl=document.getElementById('strategy-card-title');
+  const sub=document.getElementById('strategy-card-sub');
+  if(av) av.textContent=u.avatar;
+  if(ttl) ttl.textContent=`${u.name}н төлөвлөгөө`;
+  if(sub) sub.textContent=`🎯 ${u.strategy}`;
+
+  // Fill body (shown on expand)
+  const body=document.getElementById('strategy-card-body');
+  if(!body) return;
+  body.innerHTML=`
+    <!-- Goals row -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:12px">
+      ${u.goalWeight?`<div style="background:var(--grns);border-radius:10px;padding:9px;text-align:center"><div style="font-size:17px;font-weight:900;color:var(--grn)">${u.goalWeight}кг</div><div style="font-size:9px;color:var(--t2);font-weight:800;margin-top:2px">ЖИНГИЙН ЗОРИЛГО</div></div>`:''}
+      ${u.goalFat?`<div style="background:var(--reds);border-radius:10px;padding:9px;text-align:center"><div style="font-size:17px;font-weight:900;color:var(--red)">${u.goalFat}%</div><div style="font-size:9px;color:var(--t2);font-weight:800;margin-top:2px">ӨӨХ БУУРУУЛАХ</div></div>`:''}
+      ${u.goalVisceral?`<div style="background:var(--orgs);border-radius:10px;padding:9px;text-align:center"><div style="font-size:17px;font-weight:900;color:var(--org)">${u.goalVisceral} level</div><div style="font-size:9px;color:var(--t2);font-weight:800;margin-top:2px">ВИСЦЕРАЛ</div></div>`:''}
+      ${u.goalMuscle?`<div style="background:var(--blus);border-radius:10px;padding:9px;text-align:center"><div style="font-size:17px;font-weight:900;color:var(--blu)">+${u.goalMuscle}кг</div><div style="font-size:9px;color:var(--t2);font-weight:800;margin-top:2px">БУЛЧИН</div></div>`:''}
+    </div>
+
+    <!-- Алхалт -->
+    <div style="display:flex;align-items:center;gap:9px;padding:10px 12px;background:var(--surf2);border-radius:10px;margin-bottom:10px;border:1px solid var(--brd)">
+      <span style="font-size:18px">🚶</span>
+      <div>
+        <div style="font-size:12px;font-weight:700;color:var(--t1)">${isBataa?'8,000–12,000':'6,000–8,000'} алхам</div>
+        <div style="font-size:11px;color:var(--t2);margin-top:1px">Өдөр бүр — амрах өдөр байхгүй</div>
+      </div>
+    </div>
+
+    <!-- Алтан дүрэм -->
+    <div style="background:${bg};border-radius:10px;padding:10px;border:1px solid ${brd};margin-bottom:10px">
+      <div style="font-size:10px;font-weight:800;color:${accent};text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px">⚡ Алтан дүрэм</div>
+      <div style="font-size:12px;font-weight:700;color:var(--t1)">${u.golden}</div>
+    </div>
+
+    <!-- 14 хоногийн дараа -->
+    <div style="padding:10px;background:var(--grns);border-radius:10px;border:1px solid var(--grnm)">
+      <div style="font-size:10px;font-weight:800;color:var(--grn);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px">📈 14 хоногийн дараа</div>
+      <div style="font-size:12px;font-weight:700;color:var(--t1)">${u.result14}</div>
+    </div>
+    ${isBataa?'':'<div style="font-size:11px;color:var(--t2);margin-top:9px;line-height:1.5">💡 Эхний 3 өдөр бага бага → дараа нь нэмнэ</div>'}`;
+}
+
+function renderExercise(){
+  const isBataa=CU==='bataa';
+  const titleEl=document.getElementById('exercise-title');
+  const listEl=document.getElementById('exercise-list');
+  if(!titleEl||!listEl)return;
+  titleEl.textContent=`💪 ${isBataa?'20':'15-20'} мин дасгал`;
+  const exercises=isBataa?[
+    {ic:'🏋️',n:'Сууж босох',sub:'Squat · 3×15'},
+    {ic:'💪',n:'Суниах',sub:'Push-up · 3×10'},
+    {ic:'🧘',n:'Биеээ өргөж хэвтэх',sub:'Plank · 3×30с'},
+    {ic:'🦵',n:'Дээшээ харж хэвтэж байгаад хөлөө дээш доош',sub:'Leg raise · 3×12'},
+    {ic:'🔄',n:'Доошоо харж хэвтэж байгаад хөл гараа дээшээ сарвайх',sub:'Superman · 3×10'},
+    {ic:'🌿',n:'Гуя сунгах',sub:'Hamstring stretch · 30с'},
+  ]:[
+    {ic:'🏋️',n:'Сууж босох',sub:'Squat · 3×15'},
+    {ic:'🍑',n:'Дээш харж хэвтэж байгаад хэвлий гуяа өргөх',sub:'Glute bridge · 3×20'},
+    {ic:'🧘',n:'Биеээ өргөж хэвтэх',sub:'Plank · 3×30с'},
+    {ic:'🦵',n:'Хажуу хөлөө өргөх',sub:'Side leg raise · 3×15'},
+    {ic:'🌿',n:'4 хөллөж сууж байгаад нуруугаа бөгтийлгөх',sub:'Cat-cow · 1 мин'},
+    {ic:'💆',n:'Мөр сунгах',sub:'Shoulder stretch · 30с'},
+  ];
+  listEl.innerHTML=exercises.map(ex=>`
+    <div style="display:flex;align-items:flex-start;gap:7px;background:var(--surf2);border-radius:9px;padding:8px 9px;border:1px solid var(--brd)">
+      <span style="font-size:15px;flex-shrink:0">${ex.ic}</span>
+      <div><div style="font-size:11px;font-weight:700;color:var(--t1);line-height:1.3">${ex.n}</div><div style="font-size:10px;color:var(--grn);font-weight:600;margin-top:1px">${ex.sub}</div></div>
+    </div>`).join('');
+}
+
+function renderPersonalMeals(){
+  const u=USERS[CU];
+  const el=document.getElementById('food-personal-meals');
+  if(!el||!u.meals)return;
+  const isBataa=CU==='bataa';
+  const accent=isBataa?'var(--blu)':'#BE185D';
+  const bg=isBataa?'#EFF6FF':'#FDF2F8';
+  const brd=isBataa?'#BFDBFE':'#F9A8D4';
+  el.innerHTML=`<div style="background:${bg};border:1.5px solid ${brd};border-radius:13px;padding:14px;margin-bottom:11px">
+    <div style="font-size:10px;font-weight:800;color:${accent};text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">${u.avatar} ${u.name}н өдрийн хоол</div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;gap:10px"><div style="font-size:14px;flex-shrink:0;margin-top:1px">🌅</div><div><div style="font-size:10px;font-weight:800;color:var(--t2);margin-bottom:2px">ӨГЛӨӨ</div><div style="font-size:12px;color:var(--t1);line-height:1.6">${u.meals.morning}</div></div></div>
+      <div style="display:flex;gap:10px"><div style="font-size:14px;flex-shrink:0;margin-top:1px">☀️</div><div><div style="font-size:10px;font-weight:800;color:var(--t2);margin-bottom:2px">ӨДӨР</div><div style="font-size:12px;color:var(--t1);line-height:1.6">${u.meals.lunch}</div></div></div>
+      <div style="display:flex;gap:10px"><div style="font-size:14px;flex-shrink:0;margin-top:1px">🌙</div><div><div style="font-size:10px;font-weight:800;color:var(--t2);margin-bottom:2px">ОРОЙ</div><div style="font-size:12px;color:var(--t1);line-height:1.6">${u.meals.dinner}</div></div></div>
+    </div>
+    <div style="margin-top:10px;padding-top:10px;border-top:1px solid ${brd}">
+      <div style="font-size:10px;font-weight:800;color:var(--red);margin-bottom:3px">❌ ХАСАХ</div>
+      <div style="font-size:11px;color:var(--t2);line-height:1.6">${u.avoid}</div>
+    </div>
+  </div>`;
+}
+
 async function delMeal(i){
   const meals=await sbLoad(CU,'meals')||{};
   if(meals[td()])meals[td()].splice(i,1);
-  await sbSave(CU,'meals',meals);await renderMeals();
+  await sbSave(CU,'meals',meals);
+  // Auto-uncheck food task if no meals left
+  if(!meals[td()]||meals[td()].length===0){
+    const habits=await sbLoad(CU,'habits')||{};
+    if(habits[td()])habits[td()].food=false;
+    await sbSave(CU,'habits',habits);
+    await renderTasks();await renderScore();
+  }
+  await renderMeals();
 }
 
 // SAVED FOODS
@@ -830,20 +1221,30 @@ async function renderHistory(){
   const meals=await sbLoad(CU,'meals')||{};
   const tasks=getTasks();
   const list=document.getElementById('history-list');
-  const today=new Date(td());let html='';
+  const profile=await sbLoad(CU,'profile');
+  if(!profile||!profile.startDate){list.innerHTML='<div class="empty-st"><div class="eic">📅</div><p>Өгөгдөл байхгүй</p></div>';return;}
+
+  const start=new Date(profile.startDate+'T00:00:00');
+  const today=new Date(td()+'T00:00:00');
+  let html='';
+
   for(let i=0;i<14;i++){
-    const d=new Date(today);d.setDate(d.getDate()-i);
+    const d=new Date(start);
+    d.setDate(start.getDate()+i);
+    if(d>today) break; // future days skip
     const key=d.toISOString().split('T')[0];
     const h=habits[key]||{},dm=meals[key]||[];
     const done=tasks.filter(t=>h[t.id]).length,total=tasks.length;
     const pct=total>0?Math.round(done/total*100):0;
-    const color=pct>=80?'var(--grn)':pct>=50?'var(--org)':'var(--red)';
+    const color=pct>=80?'var(--grn)':pct>=50?'var(--org)':'var(--t3)';
+    const isToday=key===td();
+    const dayLabel=isToday?`${i+1}-р өдөр · Өнөөдөр`:`${i+1}-р өдөр · ${fmtDate(key)}`;
     html+=`<div class="hdc">
       <div class="hdh" onclick="toggleHist('hd${i}')">
-        <div><div class="hdd">${i===0?'Өнөөдөр':fmtDate(key)}</div>
+        <div><div class="hdd">${dayLabel}</div>
           <div style="width:110px;height:3px;background:var(--surf2);border-radius:2px;overflow:hidden;margin-top:4px"><div style="height:100%;width:${pct}%;background:${color};border-radius:2px"></div></div>
         </div>
-        <div style="text-align:right"><div class="hdsc" style="color:${color}">${pct}%</div><div style="font-size:9px;color:var(--t2)">${done}/${total}</div></div>
+        <div style="text-align:right"><div class="hdsc" style="color:${color}">${pct>0?pct+'%':'—'}</div><div style="font-size:9px;color:var(--t2)">${done}/${total}</div></div>
       </div>
       <div class="hdbody" id="hd${i}">
         <div style="margin-bottom:9px">${tasks.map(t=>`<div class="htr"><span style="font-size:13px">${h[t.id]?'✅':'⬜'}</span><span style="font-size:12px;font-weight:${h[t.id]?700:400};color:${h[t.id]?'var(--t1)':'var(--t2)'}">${t.icon} ${t.name}</span></div>`).join('')}</div>
@@ -953,33 +1354,147 @@ async function renderCompare(){
 async function loadAI(){
   const btn=document.getElementById('ai-btn'),content=document.getElementById('ai-content');
   btn.textContent='...';btn.disabled=true;
-  content.innerHTML=`<div style="text-align:center;padding:18px;color:var(--t2)"><div style="font-size:18px;animation:spin 1s linear infinite;display:inline-block">⏳</div><br><span style="font-size:11px;font-weight:700">Анализ хийж байна...</span></div>`;
+
   if(!window._cmpStats)await renderCompare();
   const {stats,allData}=window._cmpStats||{};
-  if(!stats){content.innerHTML='<div style="color:var(--red);font-size:11px;padding:12px">Өгөгдөл хангалтгүй</div>';btn.textContent='Шинэчлэх';btn.disabled=false;return;}
-  let ds='';
-  for(const u of['bataa','byambaa']){
-    const info=USERS[u],s=stats[u];
-    const bmE=Object.entries(allData[u].bm).sort((a,b)=>a[0].localeCompare(b[0]));
-    const lat=bmE[bmE.length-1]?.[1]||{};
-    ds+=`\n${info.name} (${u==='bataa'?'Аав, 53 нас, висцерал өөх өндөр, чихэр их иддэг':'Ээж, 46 нас, биеийн өөх 35%, хөдөлгөөн хийдэггүй'}):\n`;
-    ds+=`  Дундаж: ${s.avg}%, Streak: ${s.streak}, Идэвхтэй өдөр: ${s.days}\n`;
-    DEFAULT_TASKS.forEach(t=>{const p=s.days>0?Math.round(s.tc[t.id]/Math.max(s.days,1)*100):0;ds+=`  ${t.icon} ${t.name}: ${p}% (${s.tc[t.id]}/${s.days})\n`;});
-    if(lat.weight)ds+=`  Жин: ${lat.weight}кг${lat.fat?`, Өөх: ${lat.fat}%`:''}${lat.muscle?`, Булчин: ${lat.muscle}кг`:''}\n`;
+  if(!stats){content.innerHTML='<div style="color:var(--red);font-size:12px;padding:14px">Өгөгдөл байхгүй байна</div>';btn.textContent='Шинэчлэх';btn.disabled=false;return;}
+
+  const users=['bataa','byambaa'];
+  let html='';
+
+  for(const u of users){
+    const info=USERS[u];
+    const s=stats[u];
+    const isBataa=u==='bataa';
+
+    // Task performance analysis
+    const taskAnalysis=DEFAULT_TASKS.map(t=>{
+      const done=s.tc[t.id]||0;
+      const total=Math.max(s.days,1);
+      const pct=Math.round(done/total*100);
+      return{...t,pct,done,total};
+    });
+
+    const weakTasks=taskAnalysis.filter(t=>t.pct<50).sort((a,b)=>a.pct-b.pct);
+    const strongTasks=taskAnalysis.filter(t=>t.pct>=80);
+
+    // Why analysis per weak task
+    const whyMap={
+      steps: 'Суугаа ажил учраас алхах боломж хязгаарлагдмал байж болно. Үдийн завсарлагаанд товч алхалт хийж болно.',
+      water: 'Ус уух дадал аяндаа тогтдоггүй. Ширээн дээр ус байлгах, телефонд сануулга тавих нь тусална.',
+      nosugar: 'Чихэрт донтолт нь хамгийн хэцүү зуршил. Өлсөхөд чихэр хүсдэг — тараг эсвэл алим бэлэн байлга.',
+      food: 'Хоол бүртгэх мартдаг байж болно. Хоол идсэнийхээ дараа шууд бүртгэх дадал хэвшүүл.',
+      sleep: '11:00-с өмнө унтахад хэцүү байна. Орыг цагт заасан цагт орох дадал хэвшүүл.',
+      stretch: 'Дасгалын дараа сунгалтыг орхичихдог. Дасгалын хамт хийдэг болгож дадлага болго.',
+      detox: 'Гар утас аяндаа нийгмийн сүлжээ рүү очдог. Апп хязгаарлах тохиргоо ашиглаарай.',
+    };
+
+    const accent=isBataa?'var(--red)':'#BE185D';
+    const bgLight=isBataa?'#FEF2F2':'#FDF2F8';
+    const brdLight=isBataa?'#FECACA':'#F9A8D4';
+
+    html+=`<div style="margin-bottom:16px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+        <span style="font-size:20px">${info.avatar}</span>
+        <div>
+          <div style="font-size:13px;font-weight:800;color:var(--t1)">${info.name}</div>
+          <div style="font-size:11px;color:var(--t2)">${s.days} өдөр идэвхтэй · дундаж ${s.avg}% · 🔥 ${s.streak} хоног</div>
+        </div>
+        <div style="margin-left:auto;font-size:18px;font-weight:900;color:${s.avg>=70?'var(--grn)':s.avg>=40?'var(--org)':'var(--red)'}">${s.avg}%</div>
+      </div>
+
+      ${strongTasks.length?`<div style="background:var(--grns);border-radius:10px;padding:10px;margin-bottom:8px">
+        <div style="font-size:10px;font-weight:800;color:var(--grn);margin-bottom:5px">✅ САЙН БИЕЛҮҮЛЖ БУЙ</div>
+        <div style="display:flex;flex-wrap:wrap;gap:5px">
+          ${strongTasks.map(t=>`<span style="background:#D1FAE5;color:#065F46;padding:3px 9px;border-radius:10px;font-size:11px;font-weight:700">${t.icon} ${t.name} ${t.pct}%</span>`).join('')}
+        </div>
+      </div>`:''}
+
+      ${weakTasks.length?`<div style="background:${bgLight};border-radius:10px;padding:10px;margin-bottom:8px;border:1px solid ${brdLight}">
+        <div style="font-size:10px;font-weight:800;color:${accent};margin-bottom:8px">⚠️ САЙЖРУУЛАХ ЗҮЙЛС</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          ${weakTasks.slice(0,3).map(t=>`<div>
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+              <span style="font-size:13px">${t.icon}</span>
+              <span style="font-size:12px;font-weight:700;color:var(--t1)">${t.name}</span>
+              <span style="font-size:11px;font-weight:800;color:var(--red);margin-left:auto">${t.done}/${t.total} өдөр (${t.pct}%)</span>
+            </div>
+            <div style="font-size:11px;color:var(--t2);line-height:1.5;padding-left:19px">💡 ${whyMap[t.id]||'Тогтмол хийхийг зорь.'}</div>
+          </div>`).join('')}
+        </div>
+      </div>`:
+      `<div style="background:var(--grns);border-radius:10px;padding:10px;text-align:center">
+        <div style="font-size:13px;font-weight:800;color:var(--grn)">🎉 Маш сайн явж байна!</div>
+      </div>`}
+    </div>`;
   }
-  try{
-    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:
-        `Та эрүүл мэндийн туслах. Монгол хэлээр анализ хийж HTML-ээр буцаана уу.\n${ds}\nДараах бүтцээр бич: 1) Ерөнхий дүгнэлт 2) Батаа — биелүүлээгүй task-ийн ЯАГААД тайлбартай зөвлөгөө 3) Бямбажав — мөн адил 4) Хамтын урам зориг. Товч, 300-400 үг. HTML div/strong/span ашиглаж болно.`
-      }]})});
-    const data=await resp.json();
-    const text=data.content?.map(c=>c.text||'').join('')||'Хариу ирсэнгүй';
-    content.innerHTML=`<div style="font-size:12px;line-height:1.7;color:var(--t1)">${text}</div>`;
-  }catch(e){content.innerHTML=`<div style="color:var(--red);font-size:11px;padding:12px">Холболтын алдаа</div>`;}
+
+  // Summary verdict
+  const bAvg=stats.bataa.avg, yAvg=stats.byambaa.avg;
+  const leader=bAvg>yAvg?'Батаа':'Бямбажав';
+  html+=`<div style="background:linear-gradient(135deg,#1C1C1A,#2A2A28);border-radius:12px;padding:13px;text-align:center">
+    <div style="font-size:10px;font-weight:800;color:#FDE68A;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">⚡ Нийт үнэлгээ</div>
+    <div style="font-size:13px;color:#E0E0D8;line-height:1.7">
+      Одоогоор <strong style="color:#4ADE80">${leader}</strong> тэргүүлж байна.<br>
+      <span style="color:#9A9A92">Хамтдаа алхвал хоёул ялна. Тэслэхгүй!</span>
+    </div>
+  </div>`;
+
+  content.innerHTML=`<div style="font-size:13px;color:var(--t1)">${html}</div>`;
   btn.textContent='Шинэчлэх';btn.disabled=false;
 }
 
-// WIN
+// ==================== DATA RESET ====================
+function confirmClearData(){
+  // Show confirm modal
+  const ov=document.createElement('div');
+  ov.style.cssText=`position:fixed;inset:0;background:rgba(28,28,26,.5);z-index:300;display:flex;align-items:center;justify-content:center;padding:24px`;
+  ov.innerHTML=`
+    <div style="background:var(--surf);border-radius:20px;padding:24px;width:100%;max-width:320px;box-shadow:0 12px 40px rgba(0,0,0,.2);border:1px solid var(--brd)">
+      <div style="font-size:32px;text-align:center;margin-bottom:10px">🗑️</div>
+      <div style="font-size:16px;font-weight:900;text-align:center;margin-bottom:6px;color:var(--t1)">Бүх дата устгах</div>
+      <div style="font-size:13px;color:var(--t2);text-align:center;line-height:1.6;margin-bottom:20px">
+        <strong style="color:var(--red)">${USERS[CU]?.name}</strong>-н бүх мэдээлэл устана.<br>
+        Даалгавар, хоол, жин, шагнал — бүгд.<br>
+        Энэ үйлдлийг буцаах боломжгүй!
+      </div>
+      <div style="display:flex;gap:10px">
+        <button onclick="this.closest('div[style]').remove()" style="flex:1;padding:12px;background:var(--surf2);border:1.5px solid var(--brd);border-radius:11px;font-size:14px;font-weight:800;color:var(--t2);cursor:pointer;font-family:var(--fn)">Болих</button>
+        <button onclick="clearAllData()" style="flex:1;padding:12px;background:var(--red);border:none;border-radius:11px;font-size:14px;font-weight:800;color:#fff;cursor:pointer;font-family:var(--fn)">Устгах</button>
+      </div>
+    </div>`;
+  document.body.appendChild(ov);
+  ov.addEventListener('click', e=>{ if(e.target===ov) ov.remove(); });
+}
+
+async function clearAllData(){
+  // Remove confirm dialog
+  document.querySelectorAll('body > div[style*="rgba"]').forEach(el=>{
+    if(el.querySelector('button')) el.remove();
+  });
+
+  const tables=['habits','meals','bodymetrics','weights','customtasks','savedfoods','profile'];
+
+  // Clear localStorage
+  tables.forEach(t=>LS.s(CU,t,null));
+  // Clear achievement shown cache
+  localStorage.removeItem('hc14_'+CU+'_ach');
+
+  // Clear Supabase
+  if(sbClient){
+    for(const t of tables){
+      try{ await sbClient.from('hc14_'+t).delete().eq('id',CU); }catch(e){}
+    }
+  }
+
+  // Reset user tasks
+  window._userTasks = null;
+
+  toast('✅ Бүх дата устгагдлаа');
+  setTimeout(()=>{ logout(); }, 1200);
+}
+
+// ==================== WIN ====================
 function showWin(streak){
   const info=USERS[CU];
   document.getElementById('win-title').textContent=`${info.name}, өнөөдөр 100%! 🏆`;
