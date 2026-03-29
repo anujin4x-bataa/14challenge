@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>14 Хоногийн Сорилт</title>
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#fff">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#f7f7f5;--surf:#fff;--surf2:#f0f0ed;--surf3:#e8e8e4;
+  --brd:#e4e4e0;--brd2:#d0d0ca;
+  --t1:#181816;--t2:#62625c;--t3:#a0a09a;
+  --grn:#1f9c60;--grns:#e6f7ef;--grnm:#a8dfc4;
+  --red:#d94f4f;--reds:#fdf0f0;
+  --org:#e8873a;--orgs:#fdf3ec;
+  --blu:#3d77e8;--blus:#eef3fd;
+  --ylw:#d4a820;--ylws:#fdf8e6;
+  --pur:#8b5cf6;--purs:#f5f0ff;
+  --r:16px;--r2:12px;
+  --sh:0 1px 8px rgba(0,0,0,.05);--sh2:0 4px 20px rgba(0,0,0,.09);
+  --fn:'Nunito',sans-serif;
+}
+html{-webkit-font-smoothing:antialiased}
+body{font-family:var(--fn);background:var(--bg);color:var(--t1);min-height:100dvh;overflow-x:hidden}
+.screen{display:none;min-height:100dvh;flex-direction:column}
+.screen.active{display:flex}
+
+/* AUTH */
+#auth-screen{align-items:center;justify-content:center;padding:28px 20px;background:linear-gradient(150deg,#edf9f4,#fff,#f0edfb);min-height:100dvh}
+.auth-card{width:100%;max-width:340px;background:var(--surf);border-radius:24px;padding:32px 24px;box-shadow:var(--sh2);border:1px solid var(--brd)}
+.auth-logo{text-align:center;margin-bottom:24px}
+.auth-logo .aem{font-size:52px;display:block;margin-bottom:6px}
+.auth-logo h1{font-size:21px;font-weight:900;letter-spacing:-.4px}
+.auth-logo p{font-size:13px;color:var(--t2);margin-top:3px}
+.auth-users{display:flex;flex-direction:column;gap:10px}
+.user-btn{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:14px;border:1.5px solid var(--brd);background:var(--surf);cursor:pointer;transition:all .18s;text-align:left;width:100%}
+.user-btn:hover{border-color:var(--grn);background:var(--grns)}
+.user-btn:active{transform:scale(.98)}
+.uav{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.user-btn.bataa .uav{background:#e8f0fd}
+.user-btn.byambaa .uav{background:#fde8f8}
+.un{font-size:14px;font-weight:800}
+.us{font-size:11px;color:var(--t2);margin-top:2px;line-height:1.4}
+
+/* SETUP */
+#setup-screen{align-items:center;justify-content:center;padding:28px 20px;background:linear-gradient(150deg,#edf9f4,#fff);min-height:100dvh}
+.setup-card{width:100%;max-width:340px;background:var(--surf);border-radius:24px;padding:28px 22px;box-shadow:var(--sh2);border:1px solid var(--brd)}
+.sf{margin-bottom:14px}
+.sf label{display:block;font-size:10px;font-weight:800;color:var(--t2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:5px}
+.sf input{width:100%;padding:11px 13px;border:1.5px solid var(--brd);border-radius:10px;font-size:15px;font-family:var(--fn);outline:none;background:var(--surf)}
+.sf input:focus{border-color:var(--grn)}
+.btn-p{width:100%;padding:13px;border:none;border-radius:12px;background:var(--grn);color:#fff;font-size:14px;font-weight:800;font-family:var(--fn);cursor:pointer;transition:all .18s}
+.btn-p:active{transform:scale(.98)}
+
+/* HEADER */
+.app-hdr{position:sticky;top:0;z-index:100;background:rgba(247,247,245,.93);backdrop-filter:blur(18px);border-bottom:1px solid var(--brd);padding:10px 14px 0}
+.hdr-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.hdr-user{display:flex;align-items:center;gap:9px}
+.hdr-av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px}
+.hdr-av.bataa{background:#e8f0fd}
+.hdr-av.byambaa{background:#fde8f8}
+.hdr-name{font-size:14px;font-weight:800}
+.hdr-day{font-size:10px;color:var(--t2)}
+.hdr-actions{display:flex;gap:5px}
+.hdr-btn{background:none;border:1px solid var(--brd2);border-radius:8px;padding:5px 9px;font-size:11px;color:var(--t2);cursor:pointer;font-family:var(--fn);font-weight:700}
+.tab-nav{display:flex;gap:1px;overflow-x:auto;scrollbar-width:none}
+.tab-nav::-webkit-scrollbar{display:none}
+.tab-btn{flex-shrink:0;padding:8px 12px;border-radius:10px 10px 0 0;border:none;background:transparent;font-size:12px;font-weight:700;color:var(--t2);cursor:pointer;font-family:var(--fn);transition:all .15s;white-space:nowrap;border-bottom:2px solid transparent}
+.tab-btn.active{color:var(--grn);border-bottom-color:var(--grn);background:rgba(31,156,96,.06)}
+
+/* TABS */
+.tab-c{display:none;padding:14px 13px 100px;flex-direction:column;gap:12px}
+.tab-c.active{display:flex}
+
+/* CARD */
+.card{background:var(--surf);border-radius:var(--r);border:1px solid var(--brd);padding:15px;box-shadow:var(--sh)}
+.ctitle{font-size:10px;font-weight:800;color:var(--t3);letter-spacing:.8px;text-transform:uppercase;margin-bottom:11px}
+.ctitle-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px}
+.ctitle-row .ctitle{margin-bottom:0}
+.ic-btn{background:var(--surf2);border:1px solid var(--brd2);border-radius:8px;padding:5px 9px;font-size:11px;font-weight:800;color:var(--t2);cursor:pointer;font-family:var(--fn)}
+
+/* HERO */
+.hero-card{background:var(--surf);border-radius:var(--r);border:1px solid var(--brd);padding:18px 15px;box-shadow:var(--sh)}
+.hero-inner{display:flex;align-items:center;gap:15px}
+.hero-ring{position:relative;width:84px;height:84px;flex-shrink:0}
+.hero-ring svg{transform:rotate(-90deg)}
+.hero-rc{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.hero-rn{font-size:21px;font-weight:900;line-height:1}
+.hero-rs{font-size:7px;color:var(--t2);font-weight:800;letter-spacing:.5px}
+.hero-right{flex:1;min-width:0}
+.hero-dl{font-size:10px;font-weight:800;color:var(--grn);text-transform:uppercase;letter-spacing:.4px;margin-bottom:2px}
+.hero-score{font-size:28px;font-weight:900;line-height:1;margin-bottom:4px}
+.hero-score .hs-sub{font-size:13px;color:var(--t2);font-weight:600}
+.hero-bw{height:6px;background:var(--surf2);border-radius:3px;overflow:hidden;margin-bottom:5px}
+.hero-b{height:100%;border-radius:3px;background:var(--grn);transition:width .4s}
+.hero-ht{font-size:11px;color:var(--t2);font-weight:600}
+.streak-pill{display:inline-flex;align-items:center;gap:4px;background:var(--ylws);border:1px solid #e8d070;border-radius:20px;padding:4px 10px;font-size:12px;font-weight:700;color:#9a7010;margin-top:10px}
+
+/* MOTIVATION */
+.mot-card{background:linear-gradient(135deg,var(--grns),#fff);border:1.5px solid var(--grnm);border-radius:var(--r);padding:15px;position:relative;overflow:hidden}
+.mot-lbl{font-size:9px;font-weight:800;color:var(--grn);text-transform:uppercase;letter-spacing:.8px;margin-bottom:5px}
+.mot-q{position:absolute;right:10px;top:6px;font-size:40px;opacity:.07;font-family:Georgia,serif;line-height:1}
+.mot-txt{font-size:14px;font-weight:700;color:var(--t1);line-height:1.55}
+.mot-auth{font-size:11px;color:var(--t2);margin-top:4px}
+
+/* TASKS */
+.task-item{display:flex;align-items:center;gap:11px;padding:12px 13px;border-radius:12px;background:var(--surf);border:1.5px solid var(--brd);cursor:pointer;transition:all .15s;margin-bottom:7px}
+.task-item:last-child{margin-bottom:0}
+.task-item.done{background:var(--grns);border-color:var(--grnm)}
+.task-item:active{transform:scale(.98)}
+.tchk{width:23px;height:23px;border-radius:50%;border:2px solid var(--brd2);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .18s;font-size:11px}
+.task-item.done .tchk{background:var(--grn);border-color:var(--grn);color:#fff}
+.tic{font-size:19px;flex-shrink:0}
+.tinfo{flex:1;min-width:0}
+.tname{font-size:13px;font-weight:700}
+.task-item.done .tname{color:var(--grn)}
+.tdesc{font-size:11px;color:var(--t2);margin-top:1px}
+.task-item.done .tdesc{color:#6ab899}
+
+/* FOOD */
+.macro-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:11px}
+.mi{text-align:center;padding:9px 5px;background:var(--surf2);border-radius:9px}
+.mi .mv{font-size:15px;font-weight:900}
+.mi .ml{font-size:9px;color:var(--t2);font-weight:800;text-transform:uppercase;margin-top:1px}
+.meal-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:9px}
+.mtag{padding:5px 10px;border-radius:18px;font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid var(--brd2);color:var(--t2);background:var(--surf2);transition:all .15s}
+.mtag.sel{background:var(--grns);border-color:var(--grn);color:var(--grn)}
+.fi{width:100%;padding:10px 12px;border:1.5px solid var(--brd);border-radius:10px;font-size:14px;font-family:var(--fn);outline:none;background:var(--surf);margin-bottom:7px}
+.fi:focus{border-color:var(--grn)}
+.mig{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:9px}
+.mf label{display:block;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;margin-bottom:3px}
+.mf input{width:100%;padding:8px 6px;border:1.5px solid var(--brd);border-radius:9px;font-size:13px;font-weight:700;font-family:var(--fn);outline:none;background:var(--surf);text-align:center}
+.mf input:focus{border-color:var(--grn)}
+.btn-add{padding:11px;background:var(--grn);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:800;font-family:var(--fn);cursor:pointer;flex:1}
+.btn-add:active{opacity:.85}
+.meal-entry{border-radius:10px;background:var(--surf2);padding:9px 11px;margin-top:7px;border:1px solid var(--brd)}
+.me-top{display:flex;align-items:center;gap:7px}
+.me-tag{padding:2px 7px;border-radius:9px;font-size:9px;font-weight:800;background:var(--grns);color:var(--grn);flex-shrink:0}
+.me-name{flex:1;font-size:13px;font-weight:700}
+.me-kcal{font-size:12px;font-weight:800}
+.me-del{background:none;border:none;color:var(--t3);cursor:pointer;font-size:16px;padding:0 2px;line-height:1}
+.me-macros{display:flex;gap:9px;margin-top:4px}
+.me-macros span{font-size:10px;font-weight:700}
+.sfi{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:9px;background:var(--surf2);border:1px solid var(--brd);margin-bottom:5px;cursor:pointer;transition:all .15s}
+.sfi:hover{background:var(--grns);border-color:var(--grnm)}
+.sfi-name{flex:1;font-size:13px;font-weight:700}
+.sfi-m{font-size:10px;color:var(--t2);font-weight:600}
+
+/* BODY */
+.bfield label{display:block;font-size:9px;font-weight:800;color:var(--t2);margin-bottom:3px;text-transform:uppercase;letter-spacing:.4px}
+.bfield input{width:100%;padding:9px 10px;border:1.5px solid var(--brd);border-radius:9px;font-size:13px;font-weight:700;font-family:var(--fn);outline:none;background:var(--surf);text-align:center}
+.bfield input:focus{border-color:var(--grn)}
+.bsg{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.bsi{text-align:center;padding:9px 5px;background:var(--surf2);border-radius:9px}
+.bsv{font-size:14px;font-weight:900}
+.bsl{font-size:9px;color:var(--t2);font-weight:800;margin-top:1px}
+.bsd{font-size:10px;font-weight:800;margin-top:1px}
+.mtabs{display:flex;gap:4px}
+.mtab{padding:4px 8px;border-radius:7px;border:1px solid var(--brd2);background:transparent;font-size:10px;font-weight:800;color:var(--t2);cursor:pointer;font-family:var(--fn);transition:all .14s}
+.mtab.active{background:var(--t1);color:#fff;border-color:var(--t1)}
+.chart-wrap{position:relative;height:170px;margin-top:7px}
+.wr{display:flex;align-items:flex-start;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--brd)}
+.wr:last-child{border-bottom:none}
+.wr-d{font-size:10px;font-weight:700;color:var(--t2)}
+.wr-v{font-size:14px;font-weight:900}
+.wr-df{font-size:10px;font-weight:800}
+.wr-df.dn{color:var(--grn)}
+.wr-df.up{color:var(--red)}
+
+/* HISTORY */
+.hdc{background:var(--surf);border-radius:var(--r);border:1px solid var(--brd);box-shadow:var(--sh);overflow:hidden;margin-bottom:7px}
+.hdc:last-child{margin-bottom:0}
+.hdh{display:flex;align-items:center;justify-content:space-between;padding:12px 13px;cursor:pointer}
+.hdd{font-size:12px;font-weight:800}
+.hdsc{font-size:12px;font-weight:800}
+.hdb{height:3px;background:var(--surf2)}
+.hdbf{height:100%;transition:width .3s}
+.hdbody{display:none;padding:0 13px 12px;border-top:1px solid var(--brd)}
+.hdbody.open{display:block}
+.htr{display:flex;align-items:center;gap:7px;padding:4px 0;font-size:12px}
+.hmr{font-size:11px;color:var(--t2);padding:3px 0;border-bottom:1px solid var(--brd)}
+.hmr:last-child{border:none}
+
+/* COMPARE */
+.ccard{background:var(--surf);border-radius:12px;border:1.5px solid var(--brd);padding:13px;text-align:center}
+.cav{font-size:28px;margin-bottom:3px}
+.cnm{font-size:11px;font-weight:800;margin-bottom:7px}
+.cpct{font-size:21px;font-weight:900}
+.cstr{font-size:10px;color:var(--org);font-weight:700;margin-top:2px}
+.cmini{margin-top:7px;display:flex;flex-direction:column;gap:4px}
+
+/* MODAL */
+.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.38);z-index:200;display:none;align-items:flex-end;justify-content:center}
+.modal-ov.show{display:flex}
+.modal{background:var(--surf);border-radius:20px 20px 0 0;width:100%;max-width:480px;padding:18px 16px 36px;animation:slideUp .22s ease}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.mhandle{width:30px;height:3px;background:var(--brd2);border-radius:2px;margin:0 auto 14px}
+.mtitle{font-size:15px;font-weight:900;margin-bottom:13px}
+.medal-list{display:flex;flex-direction:column;gap:6px;margin-bottom:12px;max-height:50vh;overflow-y:auto}
+.medal-item{display:flex;align-items:center;gap:6px;padding:9px 10px;background:var(--surf2);border-radius:9px;border:1px solid var(--brd)}
+.mii{width:34px;text-align:center;border:1px solid var(--brd);border-radius:7px;padding:5px;font-size:15px;background:var(--surf);outline:none}
+.btn-ghost{width:100%;padding:10px;background:var(--surf2);border:1.5px dashed var(--brd2);border-radius:10px;font-size:13px;font-weight:800;color:var(--t2);cursor:pointer;font-family:var(--fn);margin-bottom:8px}
+
+/* WIN */
+#win-screen{display:none;position:fixed;inset:0;z-index:500;background:linear-gradient(150deg,#e8f7ef,#fff,#f0f8e8);flex-direction:column;align-items:center;justify-content:center;padding:28px 20px;text-align:center}
+#win-screen.show{display:flex!important}
+#cc{position:fixed;inset:0;pointer-events:none;z-index:501}
+.wi{position:relative;z-index:502}
+@keyframes winPop{0%{transform:scale(.4);opacity:0}70%{transform:scale(1.12)}100%{transform:scale(1);opacity:1}}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+
+/* TOAST */
+.toast{position:fixed;top:72px;left:50%;transform:translateX(-50%) translateY(-14px);background:var(--t1);color:#fff;padding:9px 16px;border-radius:26px;font-size:12px;font-weight:700;z-index:400;opacity:0;transition:all .25s;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* EMPTY */
+.empty-st{text-align:center;padding:24px 12px;color:var(--t3)}
+.empty-st .eic{font-size:32px;margin-bottom:7px}
+.empty-st p{font-size:12px;font-weight:700}
+
+/* CHIPS */
+.fg-chips{display:flex;flex-wrap:wrap;gap:4px}
+.fg-chip{padding:3px 8px;border-radius:16px;font-size:10px;font-weight:700}
+.fg-chip.g{background:#d0f0e0;color:#1a7a4a}
+.fg-chip.y{background:#fdecc0;color:#9a6800}
+.fg-chip.r{background:#fddada;color:#c03030}
+
+@media(max-width:380px){.tab-btn{font-size:11px;padding:7px 9px}}
+</style>
+</head>
+<body>
+
+<!-- AUTH -->
+<div id="auth-screen" class="screen active">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <span class="aem">💪</span>
+      <h1>14 Хоногийн Сорилт</h1>
+      <p>Та хэн бэ?</p>
+    </div>
+    <div class="auth-users">
+      <button class="user-btn bataa" onclick="loginSuccess('bataa')">
+        <div class="uav">👨</div>
+        <div><div class="un">Батаа</div><div class="us">Чихэр тасарч, өөх буурна — 14 хоног л хангалттай</div></div>
+      </button>
+      <button class="user-btn byambaa" onclick="loginSuccess('byambaa')">
+        <div class="uav">👩</div>
+        <div><div class="un">Бямбажав</div><div class="us">Хөдөлж, уураг идэж, биеийг өөрчилнө</div></div>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- SETUP -->
+<div id="setup-screen" class="screen">
+  <div class="setup-card">
+    <div style="font-size:19px;font-weight:900;margin-bottom:4px">Тавтай морил! 🌱</div>
+    <div style="font-size:12px;color:var(--t2);margin-bottom:18px">Эхлэхийн өмнө мэдээллээ оруулна уу</div>
+    <div class="sf"><label>Эхлэх өдөр</label><input type="date" id="setup-start"></div>
+    <div class="sf"><label>Одоогийн жин (кг)</label><input type="number" id="setup-weight" placeholder="жж.ж" step="0.1" min="30" max="300"></div>
+    <button class="btn-p" onclick="finishSetup()">Сорилт эхлэх 🚀</button>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app-screen" class="screen">
+  <div class="app-hdr">
+    <div class="hdr-top">
+      <div class="hdr-user">
+        <div class="hdr-av" id="hdr-av">👨</div>
+        <div><div class="hdr-name" id="hdr-name">Батаа</div><div class="hdr-day" id="hdr-day">1-р өдөр</div></div>
+      </div>
+      <div class="hdr-actions">
+        <button class="hdr-btn" onclick="syncToSupabase()">☁️ Sync</button>
+        <button class="hdr-btn" onclick="logout()">Гарах</button>
+      </div>
+    </div>
+    <div class="tab-nav">
+      <button class="tab-btn active" data-tab="home">🏠 Нүүр</button>
+      <button class="tab-btn" data-tab="food">🥗 Хоол</button>
+      <button class="tab-btn" data-tab="body">⚖️ Бие</button>
+      <button class="tab-btn" data-tab="history">📅 Түүх</button>
+      <button class="tab-btn" data-tab="compare">📊 Харьцуул</button>
+    </div>
+  </div>
+
+  <!-- HOME -->
+  <div class="tab-c active" id="tab-home">
+    <div class="hero-card">
+      <div class="hero-inner">
+        <div class="hero-ring">
+          <svg width="84" height="84" viewBox="0 0 84 84">
+            <circle cx="42" cy="42" r="36" fill="none" stroke="#e8e8e4" stroke-width="7"/>
+            <circle cx="42" cy="42" r="36" fill="none" stroke="#1f9c60" stroke-width="7"
+              stroke-linecap="round" stroke-dasharray="226.2" id="day-ring" stroke-dashoffset="226.2"/>
+          </svg>
+          <div class="hero-rc">
+            <div class="hero-rn" id="day-num">1</div>
+            <div class="hero-rs">ХОНОГ</div>
+          </div>
+        </div>
+        <div class="hero-right">
+          <div class="hero-dl" id="hero-dl">1-р өдөр · 14-с</div>
+          <div class="hero-score" id="hero-score">0%<span class="hs-sub" id="hero-sub"> · 0/7</span></div>
+          <div class="hero-bw"><div class="hero-b" id="hero-bar" style="width:0%"></div></div>
+          <div class="hero-ht" id="hero-ht">Өнөөдрийн зорилтоо биелүүл</div>
+        </div>
+      </div>
+      <div class="streak-pill" id="streak-pill">🔥 0 өдөр тасралтгүй</div>
+    </div>
+
+    <div class="mot-card">
+      <div class="mot-lbl">Өнөөдрийн эшлэл</div>
+      <div class="mot-q">"</div>
+      <div class="mot-txt" id="mot-txt">Өнөөдрийн жижиг алхам нь маргаашийн том ялалт болно.</div>
+      <div class="mot-auth" id="mot-auth"></div>
+    </div>
+
+    <div class="card">
+      <div class="ctitle-row">
+        <div class="ctitle">Өнөөдрийн даалгаврууд</div>
+        <button class="ic-btn" onclick="openTaskManager()">✏️ Засах</button>
+      </div>
+      <div id="task-list"></div>
+    </div>
+  </div>
+
+  <!-- FOOD -->
+  <div class="tab-c" id="tab-food">
+    <div class="card">
+      <div class="ctitle-row"><div class="ctitle">Өнөөдрийн нийт</div><div style="font-size:10px;color:var(--t2)" id="food-date"></div></div>
+      <div class="macro-grid">
+        <div class="mi"><div class="mv" id="mt-k">0</div><div class="ml">Ккал</div></div>
+        <div class="mi"><div class="mv" id="mt-p" style="color:var(--blu)">0г</div><div class="ml">Уураг</div></div>
+        <div class="mi"><div class="mv" id="mt-c" style="color:var(--org)">0г</div><div class="ml">Нүүрс</div></div>
+        <div class="mi"><div class="mv" id="mt-f" style="color:var(--ylw)">0г</div><div class="ml">Өөх</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ctitle-row">
+        <div class="ctitle">Хоол нэмэх</div>
+        <button class="ic-btn" onclick="openSavedFoods()">⭐ Миний хоолнууд</button>
+      </div>
+      <div class="meal-tags" id="meal-type-tags">
+        <div class="mtag sel" data-type="Өглөө">🌅 Өглөө</div>
+        <div class="mtag" data-type="Өдөр">☀️ Өдөр</div>
+        <div class="mtag" data-type="Орой">🌙 Орой</div>
+        <div class="mtag" data-type="Завсарлага">🍎 Завсарлага</div>
+      </div>
+      <input class="fi" type="text" id="meal-name" placeholder="Хоолны нэр...">
+      <div class="mig">
+        <div class="mf"><label style="color:var(--t2)">Ккал</label><input type="number" id="mi-k" placeholder="0"></div>
+        <div class="mf"><label style="color:var(--blu)">Уураг г</label><input type="number" id="mi-p" placeholder="0"></div>
+        <div class="mf"><label style="color:var(--org)">Нүүрс г</label><input type="number" id="mi-c" placeholder="0"></div>
+        <div class="mf"><label style="color:var(--ylw)">Өөх г</label><input type="number" id="mi-f" placeholder="0"></div>
+      </div>
+      <div style="display:flex;gap:7px">
+        <button class="btn-add" onclick="addMeal()">+ Бүртгэх</button>
+        <button onclick="saveCurrentFood()" style="padding:11px 13px;background:var(--ylws);border:1.5px solid #e8d070;border-radius:10px;font-size:12px;font-weight:800;color:#9a7010;cursor:pointer;font-family:var(--fn);flex-shrink:0">⭐ Хадгалах</button>
+      </div>
+      <div id="meal-list" style="margin-top:10px"></div>
+    </div>
+    <div class="card">
+      <div class="ctitle">🥗 Эрүүл хооллох</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:11px">
+        <div style="background:#e8f0fd;border:1.5px solid #b8cef0;border-radius:11px;padding:11px">
+          <div style="font-size:11px;font-weight:800;color:var(--blu);margin-bottom:5px">👨 Аав</div>
+          <div style="font-size:11px;color:var(--t1);line-height:1.6">Чихэр бүр зогсоох<br>Хоолны хэмжээ багасгах</div>
+        </div>
+        <div style="background:#fde8f8;border:1.5px solid #e8b8e0;border-radius:11px;padding:11px">
+          <div style="font-size:11px;font-weight:800;color:#c040a0;margin-bottom:5px">👩 Ээж</div>
+          <div style="font-size:11px;color:var(--t1);line-height:1.6">Уураг нэмэх<br>Хөдөлгөөн заавал</div>
+        </div>
+      </div>
+      <div style="background:var(--grns);border:1.5px solid var(--grnm);border-radius:12px;padding:13px;margin-bottom:9px">
+        <div style="font-size:10px;font-weight:800;color:var(--grn);margin-bottom:7px">✅ ИДЭЖ БОЛНО</div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div><div style="font-size:9px;font-weight:700;color:var(--t2);margin-bottom:3px">🍳 Уураг</div><div class="fg-chips"><span class="fg-chip g">Өндөг</span><span class="fg-chip g">Тахиа</span><span class="fg-chip g">Загас</span><span class="fg-chip g">Тараг</span><span class="fg-chip g">Үхрийн мах</span></div></div>
+          <div><div style="font-size:9px;font-weight:700;color:var(--t2);margin-bottom:3px">🥬 Ногоо (хязгааргүй)</div><div class="fg-chips"><span class="fg-chip g">Байцаа</span><span class="fg-chip g">Өргөст хэмх</span><span class="fg-chip g">Брокколи</span><span class="fg-chip g">Лууван</span><span class="fg-chip g">Навчит ногоо</span></div></div>
+          <div><div style="font-size:9px;font-weight:700;color:var(--t2);margin-bottom:3px">🍎 Жимс (1-2ш)</div><div class="fg-chips"><span class="fg-chip g">Алим</span><span class="fg-chip g">Лийр</span><span class="fg-chip g">Жүрж</span></div></div>
+          <div><div style="font-size:9px;font-weight:700;color:var(--t2);margin-bottom:3px">🍚 Нүүрс-ус (бага)</div><div class="fg-chips"><span class="fg-chip g">Бор будаа</span><span class="fg-chip g">Хар талх</span><span class="fg-chip g">Овьёос</span></div></div>
+        </div>
+      </div>
+      <div style="background:var(--ylws);border:1.5px solid #e8d06a;border-radius:12px;padding:12px;margin-bottom:9px">
+        <div style="font-size:10px;font-weight:800;color:#9a7800;margin-bottom:6px">⚠️ ХЯЗГААРЛАХ — 7 хоногт 1-2 удаа</div>
+        <div class="fg-chips"><span class="fg-chip y">Бууз, хуушуур</span><span class="fg-chip y">Шарсан хоол</span><span class="fg-chip y">Тослог мах</span><span class="fg-chip y">Гоймон</span></div>
+      </div>
+      <div style="background:var(--reds);border:1.5px solid #f0b8b8;border-radius:12px;padding:12px;margin-bottom:9px">
+        <div style="font-size:10px;font-weight:800;color:var(--red);margin-bottom:6px">🚫 ХОРИГЛОХ — 14 хоногт БОЛОХГҮЙ</div>
+        <div class="fg-chips"><span class="fg-chip r">Чихэр</span><span class="fg-chip r">Шоколад</span><span class="fg-chip r">Бялуу</span><span class="fg-chip r">Кола</span><span class="fg-chip r">Сок</span><span class="fg-chip r">Energy drink</span><span class="fg-chip r">Цагаан талх</span></div>
+      </div>
+      <div style="background:#f5f0ff;border:1.5px solid #d4b8f0;border-radius:12px;padding:11px;margin-bottom:9px">
+        <div style="font-size:10px;font-weight:800;color:#7c3aed;">🌙 20:00-с хойш — хүнд хоол ❌ · Тараг ✅ · Салат ✅</div>
+      </div>
+      <div style="background:var(--t1);border-radius:12px;padding:13px;text-align:center">
+        <div style="font-size:10px;font-weight:800;color:#c8ff00;margin-bottom:5px">📏 АЛТАН ДҮРЭМ</div>
+        <div style="font-size:12px;color:#e0e0d8;line-height:1.8">80% цадтал ид · 3 удаа хоолло · Ус 2л+ · <strong style="color:#c8ff00">Чихэр = 0</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BODY -->
+  <div class="tab-c" id="tab-body">
+    <div class="card">
+      <div class="ctitle">Биеийн хэмжилт</div>
+      <p style="font-size:11px;color:var(--t2);margin-bottom:12px">Өглөө хоолгүйгээр хэмжихийг зөвлөнө</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:12px">
+        <div class="bfield"><label>⚖️ Жин (кг)</label><input type="number" id="bm-w" placeholder="жж.ж" step="0.1"></div>
+        <div class="bfield"><label>🩺 Биеийн өөх (%)</label><input type="number" id="bm-f" placeholder="жж.ж" step="0.1"></div>
+        <div class="bfield"><label>💪 Булчин (кг)</label><input type="number" id="bm-m" placeholder="жж.ж" step="0.1"></div>
+        <div class="bfield"><label>🫀 Висцерал өөх</label><input type="number" id="bm-v" placeholder="1-30" step="0.5"></div>
+        <div class="bfield"><label>💧 Биеийн ус (%)</label><input type="number" id="bm-wa" placeholder="жж.ж" step="0.1"></div>
+        <div class="bfield"><label>🔥 BMR (ккал)</label><input type="number" id="bm-b" placeholder="1200"></div>
+      </div>
+      <button class="btn-p" onclick="saveBody()">Хадгалах</button>
+    </div>
+    <div class="card" id="bsnap-card" style="display:none">
+      <div class="ctitle">Сүүлийн хэмжилт</div>
+      <div id="bsnap"></div>
+    </div>
+    <div class="card">
+      <div class="ctitle-row">
+        <div class="ctitle">Явц</div>
+        <div class="mtabs">
+          <button class="mtab active" onclick="switchMetric('weight',this)">Жин</button>
+          <button class="mtab" onclick="switchMetric('fat',this)">Өөх%</button>
+          <button class="mtab" onclick="switchMetric('muscle',this)">Булчин</button>
+        </div>
+      </div>
+      <div class="chart-wrap"><canvas id="body-chart"></canvas></div>
+      <div id="body-stats" style="margin-top:10px"></div>
+    </div>
+    <div class="card"><div class="ctitle">Бүртгэлийн түүх</div><div id="body-list"></div></div>
+  </div>
+
+  <!-- HISTORY -->
+  <div class="tab-c" id="tab-history">
+    <div class="card"><div class="ctitle">14 Хоногийн түүх</div><div id="history-list"></div></div>
+  </div>
+
+  <!-- COMPARE -->
+  <div class="tab-c" id="tab-compare">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px">
+      <div class="ccard"><div class="cav">👨</div><div class="cnm">Батаа</div><div class="cpct" id="cp-b-p">—</div><div class="cstr" id="cp-b-s">🔥 0 өдөр</div><div class="cmini" id="cp-b-m"></div></div>
+      <div class="ccard"><div class="cav">👩</div><div class="cnm">Бямбажав</div><div class="cpct" id="cp-y-p">—</div><div class="cstr" id="cp-y-s">🔥 0 өдөр</div><div class="cmini" id="cp-y-m"></div></div>
+    </div>
+    <div class="card"><div class="ctitle">Даалгаврын биелэлт</div><div id="task-bd"></div></div>
+    <div class="card"><div class="ctitle">14 Хоногийн явц</div><div class="chart-wrap" style="height:185px"><canvas id="cmp-chart"></canvas></div></div>
+    <div class="card"><div class="ctitle">Жин & Бие</div><div id="cmp-weight"></div></div>
+    <div class="card">
+      <div class="ctitle-row">
+        <div class="ctitle">🤖 AI Анализ</div>
+        <button onclick="loadAI()" id="ai-btn" style="background:var(--grn);color:#fff;border:none;border-radius:7px;padding:5px 10px;font-size:11px;font-weight:800;cursor:pointer;font-family:var(--fn)">Шинэчлэх</button>
+      </div>
+      <div id="ai-content"><div class="empty-st"><div class="eic">🤖</div><p>Товчийг дарж AI анализ харна уу</p></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- TASK MANAGER -->
+<div class="modal-ov" id="task-modal">
+  <div class="modal">
+    <div class="mhandle"></div>
+    <div class="mtitle">Даалгавар засах</div>
+    <div class="medal-list" id="task-editor"></div>
+    <button class="btn-ghost" onclick="addNewTask()">+ Шинэ даалгавар нэмэх</button>
+    <button class="btn-p" onclick="saveTasksAndClose()">Хадгалах</button>
+  </div>
+</div>
+
+<!-- SAVED FOODS -->
+<div class="modal-ov" id="sf-modal">
+  <div class="modal">
+    <div class="mhandle"></div>
+    <div class="mtitle">⭐ Миний хоолнууд</div>
+    <div id="sf-list" style="max-height:55vh;overflow-y:auto;margin-bottom:12px"></div>
+    <button class="btn-p" onclick="closeSF()">Хаах</button>
+  </div>
+</div>
+
+<!-- WIN -->
+<div id="win-screen">
+  <canvas id="cc"></canvas>
+  <div class="wi">
+    <div style="font-size:64px;animation:winPop .5s ease;margin-bottom:6px">🏆</div>
+    <div style="font-size:22px;font-weight:900;margin-bottom:4px" id="win-title">Өнөөдөр 100%!</div>
+    <div style="font-size:13px;color:var(--t2);line-height:1.6;margin-bottom:18px" id="win-sub">Бүх даалгавраа биелүүллээ!</div>
+    <div style="display:flex;gap:7px;flex-wrap:wrap;justify-content:center;margin-bottom:14px" id="win-tasks"></div>
+    <div style="background:var(--surf);border-radius:13px;padding:13px 18px;border:1.5px solid var(--grnm);margin-bottom:16px">
+      <div style="font-size:10px;color:var(--t2);font-weight:700;margin-bottom:2px">Тасралтгүй давтан</div>
+      <div style="font-size:21px;font-weight:900;color:var(--grn)" id="win-streak">🔥 0 өдөр</div>
+    </div>
+    <button onclick="closeWin()" style="background:var(--t1);color:#fff;border:none;border-radius:12px;padding:12px 28px;font-size:14px;font-weight:800;cursor:pointer;font-family:var(--fn)">Үргэлжлүүлэх →</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SB_URL='https://rgsorfpjktbkgkfupzfk.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJnc29yZnBqa3Ria2drZnVwemZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzMzMTUzNzEsImV4cCI6MjA0ODg5MTM3MX0.1-nEaB-yCl7pGgPRMb5Xf-M_Y4kX3Bq5FsJJqfuvDA';
+
+const USERS={
+  bataa:{name:'Батаа',avatar:'👨',cls:'bataa',steps:8000},
+  byambaa:{name:'Бямбажав',avatar:'👩',cls:'byambaa',steps:6000}
+};
+
+const DEFAULT_TASKS=[
+  {id:'steps',icon:'🚶',name:'Алхалт',getDesc:u=>`${USERS[u]?.steps?.toLocaleString()}+ алхам`},
+  {id:'water',icon:'💧',name:'Ус уух',desc:'2 литр цэвэр ус'},
+  {id:'nosugar',icon:'🚫',name:'Чихэр огтгүй',desc:'Чихэр, чихэрлэг ундаа'},
+  {id:'food',icon:'🥗',name:'Эрүүл хооллох',desc:'Зөв хоол идэж бүртгэх'},
+  {id:'sleep',icon:'🛌',name:'7-8 цаг унтах',desc:'Хангалттай нойр'},
+  {id:'stretch',icon:'🧘',name:'Сунгалт',desc:'5 мин сунгалт / амьсгал'},
+  {id:'detox',icon:'📵',name:'Dopamine Detox',desc:'FB / IG / TikTok үзэхгүй'},
+];
+
+const MOTIVATIONS=[
+  {t:'Эхлэл байгаа л бол дуусгал бий.',a:'Монгол цэцэн үг'},
+  {t:'Биеийн эрүүл мэнд бол хамгийн том баялаг.',a:'Вирджил'},
+  {t:'Хэцүү замаар явсан хүн хамгийн гоё газарт хүрдэг.',a:'Зиг Зиглар'},
+  {t:'Амжилт бол дадал хэвшлийн нийлбэр.',a:'Аристотель'},
+  {t:'Өнөөдөр хийсэн зүйл маргаашийн биеийг бүтээнэ.',a:'Жим Рон'},
+  {t:'Таны бие 14 хоногт өөрчлөгдөж чадна — зөвхөн үйлдэл л хэрэгтэй.',a:''},
+  {t:'Чихэр нэг удаа татгалзана гэдэг бол өнөөдрийг ялна гэсэн үг.',a:''},
+  {t:'Жижиг дадал хэвшил том үр дүн авчирдаг.',a:'Жеймс Клир'},
+  {t:'Хүч чинь гадаад дэлхийд биш, доторх шийдвэрт байдаг.',a:'Марк Аврелий'},
+  {t:'Өчигдрийн чиний хамгийн сайн хувилбар болж яв.',a:''},
+  {t:'Хөдөлгөөн бол амьдрал, зогсонги байдал бол үхэл.',a:'Гиппократ'},
+  {t:'14 хоногийн дараа ямар их өөрчлөгдсөнөө харна.',a:''},
+  {t:'Чихэр биш, амжилтаа чихэрлэг бол.',a:''},
+  {t:'Өрсөлдөгч нь өчигдрийн чи — хэн ч биш.',a:''},
+];
+
+// STATE
+let CU=null,sb=null,selMealType='Өглөө',bodyChart=null,cmpChart=null,curMetric='weight',editTasks=[];
+
+// STORAGE
+const LS={
+  k:(u,k)=>`hc14_${u}_${k}`,
+  g:(u,k)=>{try{return JSON.parse(localStorage.getItem(LS.k(u,k)))}catch{return null}},
+  s:(u,k,v)=>localStorage.setItem(LS.k(u,k),JSON.stringify(v))
+};
+const td=()=>new Date().toISOString().split('T')[0];
+const fmtDate=d=>{if(!d)return '';const dt=new Date(d+'T00:00:00');return `${dt.getMonth()+1}-р сарын ${dt.getDate()}`;};
+
+// SUPABASE
+function initSB(){if(window.supabase&&SB_URL&&SB_KEY)sb=window.supabase.createClient(SB_URL,SB_KEY);}
+
+async function sbSave(u,t,data){
+  LS.s(u,t,data);
+  if(!sb)return;
+  try{await sb.from('hc14_'+t).upsert({id:u,data:JSON.stringify(data)},{onConflict:'id'})}catch(e){}
+}
+async function sbLoad(u,t){
+  if(!sb)return LS.g(u,t);
+  try{const{data}=await sb.from('hc14_'+t).select('*').eq('id',u);if(data&&data.length>0){const p=JSON.parse(data[0].data);LS.s(u,t,p);return p;}}catch(e){}
+  return LS.g(u,t);
+}
+
+async function syncToSupabase(){
+  if(!sb){toast('Supabase холбогдоогүй');return;}
+  toast('☁️ Sync хийж байна...');
+  for(const t of['habits','meals','bodymetrics','weights','customtasks','savedfoods','profile']){
+    const d=LS.g(CU,t);if(d)await sbSave(CU,t,d);
+  }
+  toast('✅ Sync амжилттай!');
+}
+
+// AUTH
+async function loginSuccess(u){CU=u;localStorage.setItem('hc14_sess',u);showScreen('app-screen');await initApp();}
+function logout(){CU=null;localStorage.removeItem('hc14_sess');showScreen('auth-screen');}
+
+// INIT
+async function initApp(){
+  const info=USERS[CU];
+  const av=document.getElementById('hdr-av');
+  av.textContent=info.avatar;av.className='hdr-av '+info.cls;
+  document.getElementById('hdr-name').textContent=info.name;
+
+  const ct=await sbLoad(CU,'customtasks');
+  window._tasks=ct||DEFAULT_TASKS;
+
+  const profile=await sbLoad(CU,'profile');
+  if(!profile||!profile.startDate){document.getElementById('setup-start').value=td();showScreen('setup-screen');return;}
+
+  const start=new Date(profile.startDate),today=new Date(td());
+  const dayNum=Math.min(14,Math.max(1,Math.floor((today-start)/86400000)+1));
+
+  const circ=226.2;
+  document.getElementById('day-ring').style.strokeDashoffset=circ*(1-dayNum/14);
+  document.getElementById('day-num').textContent=dayNum;
+  document.getElementById('hdr-day').textContent=`${dayNum}-р өдөр`;
+  document.getElementById('hero-dl').textContent=`${dayNum}-р өдөр · 14-с`;
+
+  const mot=MOTIVATIONS[(dayNum-1)%MOTIVATIONS.length];
+  document.getElementById('mot-txt').textContent=mot.t;
+  document.getElementById('mot-auth').textContent=mot.a?`— ${mot.a}`:'';
+  document.getElementById('food-date').textContent=fmtDate(td());
+
+  await renderScore();await renderTasks();await renderMeals();await renderBody();await renderHistory();
+
+  document.querySelectorAll('.tab-btn').forEach(btn=>{
+    btn.onclick=()=>{
+      document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+      document.querySelectorAll('.tab-c').forEach(c=>c.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-'+btn.dataset.tab).classList.add('active');
+      if(btn.dataset.tab==='compare')renderCompare();
+      if(btn.dataset.tab==='history')renderHistory();
+    };
+  });
+
+  document.getElementById('meal-type-tags').addEventListener('click',e=>{
+    const tag=e.target.closest('.mtag');if(!tag)return;
+    document.querySelectorAll('.mtag').forEach(t=>t.classList.remove('sel'));
+    tag.classList.add('sel');selMealType=tag.dataset.type;
+  });
+  document.getElementById('meal-name').addEventListener('keydown',e=>{if(e.key==='Enter')addMeal();});
+}
+
+async function finishSetup(){
+  const s=document.getElementById('setup-start').value;
+  const w=parseFloat(document.getElementById('setup-weight').value);
+  if(!s){toast('Огноо оруулна уу');return;}
+  if(!w||w<30){toast('Жин оруулна уу');return;}
+  await sbSave(CU,'profile',{startDate:s});
+  const bm={};bm[s]={weight:w};await sbSave(CU,'bodymetrics',bm);
+  const wt={};wt[s]=w;await sbSave(CU,'weights',wt);
+  showScreen('app-screen');await initApp();
+}
+
+// TASKS
+const getTasks=()=>window._tasks||DEFAULT_TASKS;
+
+async function renderTasks(){
+  const habits=await sbLoad(CU,'habits')||{};
+  const todayH=habits[td()]||{};
+  const list=document.getElementById('task-list');
+  list.innerHTML='';
+  getTasks().forEach(task=>{
+    const done=!!todayH[task.id];
+    const desc=task.getDesc?task.getDesc(CU):(task.desc||'');
+    const el=document.createElement('div');
+    el.className='task-item'+(done?' done':'');
+    el.innerHTML=`<div class="tchk">${done?'✓':''}</div><div class="tic">${task.icon}</div><div class="tinfo"><div class="tname">${task.name}</div>${desc?`<div class="tdesc">${desc}</div>`:''}</div>`;
+    el.onclick=()=>toggleTask(task.id);
+    list.appendChild(el);
+  });
+}
+
+async function toggleTask(id){
+  const habits=await sbLoad(CU,'habits')||{};
+  if(!habits[td()])habits[td()]={};
+  habits[td()][id]=!habits[td()][id];
+  await sbSave(CU,'habits',habits);
+  await renderTasks();await renderScore();
+  if(habits[td()][id]){const t=getTasks().find(x=>x.id===id);if(t)toast(`✅ ${t.name}!`);}
+}
+
+async function renderScore(){
+  const habits=await sbLoad(CU,'habits')||{};
+  const todayH=habits[td()]||{};
+  const tasks=getTasks();
+  const total=tasks.length,done=tasks.filter(t=>todayH[t.id]).length;
+  const pct=total>0?Math.round(done/total*100):0;
+  const streak=calcStreak(habits);
+  document.getElementById('hero-score').innerHTML=`${pct}%<span class="hs-sub" id="hero-sub"> · ${done}/${total}</span>`;
+  document.getElementById('hero-bar').style.width=pct+'%';
+  document.getElementById('hero-ht').textContent=pct===100?'🎉 Өнөөдөр бүгдийг биелүүллээ!':`${total-done} даалгавар үлдлээ`;
+  document.getElementById('streak-pill').textContent=`🔥 ${streak} өдөр тасралтгүй`;
+  if(pct===100){const wk='win_'+td();if(!localStorage.getItem(wk)){localStorage.setItem(wk,'1');setTimeout(()=>showWin(streak),700);}}
+}
+
+function calcStreak(habits){
+  let s=0;const today=new Date(td());const tasks=getTasks();
+  for(let i=0;i<14;i++){
+    const d=new Date(today);d.setDate(d.getDate()-i);
+    const key=d.toISOString().split('T')[0];
+    const h=habits[key]||{};const done=tasks.filter(t=>h[t.id]).length;
+    if(done>=Math.ceil(tasks.length/2))s++;else if(i>0)break;
+  }
+  return s;
+}
+
+// TASK MANAGER
+function openTaskManager(){editTasks=JSON.parse(JSON.stringify(getTasks()));renderTE();document.getElementById('task-modal').classList.add('show');}
+function renderTE(){
+  document.getElementById('task-editor').innerHTML=editTasks.map((t,i)=>`
+    <div class="medal-item">
+      <input class="mii" value="${t.icon}" oninput="editTasks[${i}].icon=this.value" maxlength="2">
+      <input type="text" value="${t.name}" oninput="editTasks[${i}].name=this.value" style="flex:1;border:1px solid var(--brd);border-radius:7px;padding:6px 8px;font-size:13px;font-weight:600;font-family:var(--fn);background:var(--surf);outline:none">
+      <button onclick="removeTask(${i})" style="background:var(--reds);border:none;border-radius:7px;padding:6px 8px;color:var(--red);font-size:14px;cursor:pointer;font-weight:800;line-height:1">×</button>
+    </div>`).join('');
+}
+function addNewTask(){editTasks.push({id:'c_'+Date.now(),icon:'⭐',name:'Шинэ даалгавар'});renderTE();}
+function removeTask(i){editTasks.splice(i,1);renderTE();}
+async function saveTasksAndClose(){
+  const v=editTasks.filter(t=>t.name.trim());
+  if(!v.length){toast('Дор хаяж 1 даалгавар байх ёстой');return;}
+  v.forEach((t,i)=>{if(!t.id)t.id='task_'+i;});
+  await sbSave(CU,'customtasks',v);window._tasks=v;
+  document.getElementById('task-modal').classList.remove('show');
+  await renderTasks();await renderScore();toast('✅ Хадгаллаа');
+}
+document.getElementById('task-modal').addEventListener('click',e=>{if(e.target.id==='task-modal')document.getElementById('task-modal').classList.remove('show');});
+
+// FOOD
+async function renderMeals(){
+  const meals=await sbLoad(CU,'meals')||{};
+  const tm=meals[td()]||[];
+  let tk=0,tp=0,tc=0,tf=0;
+  tm.forEach(m=>{tk+=m.kcal||0;tp+=m.protein||0;tc+=m.carbs||0;tf+=m.fat||0;});
+  document.getElementById('mt-k').textContent=tk;
+  document.getElementById('mt-p').textContent=tp+'г';
+  document.getElementById('mt-c').textContent=tc+'г';
+  document.getElementById('mt-f').textContent=tf+'г';
+  const list=document.getElementById('meal-list');
+  if(!tm.length){list.innerHTML='<div class="empty-st"><div class="eic">🍽️</div><p>Хоол бүртгэгдээгүй</p></div>';return;}
+  list.innerHTML=tm.map((m,i)=>`
+    <div class="meal-entry">
+      <div class="me-top">
+        <div class="me-tag">${m.type}</div>
+        <div class="me-name">${m.name}</div>
+        <div class="me-kcal">${m.kcal||0}ккал</div>
+        <button class="me-del" onclick="delMeal(${i})">×</button>
+      </div>
+      <div class="me-macros">
+        <span style="color:var(--blu)">🥩${m.protein||0}г</span>
+        <span style="color:var(--org)">🌾${m.carbs||0}г</span>
+        <span style="color:var(--ylw)">🧈${m.fat||0}г</span>
+      </div>
+    </div>`).join('');
+}
+
+async function addMeal(){
+  const name=document.getElementById('meal-name').value.trim();
+  if(!name){toast('Хоолны нэр оруулна уу');return;}
+  const kcal=parseInt(document.getElementById('mi-k').value)||0;
+  const protein=parseInt(document.getElementById('mi-p').value)||0;
+  const carbs=parseInt(document.getElementById('mi-c').value)||0;
+  const fat=parseInt(document.getElementById('mi-f').value)||0;
+  const meals=await sbLoad(CU,'meals')||{};
+  if(!meals[td()])meals[td()]=[];
+  meals[td()].push({type:selMealType,name,kcal,protein,carbs,fat});
+  await sbSave(CU,'meals',meals);
+  ['meal-name','mi-k','mi-p','mi-c','mi-f'].forEach(id=>document.getElementById(id).value='');
+  const habits=await sbLoad(CU,'habits')||{};
+  if(!habits[td()])habits[td()]={};habits[td()].food=true;await sbSave(CU,'habits',habits);
+  await renderMeals();await renderTasks();await renderScore();
+  toast(`✅ "${name}" бүртгэлээ`);
+}
+
+async function delMeal(i){
+  const meals=await sbLoad(CU,'meals')||{};
+  if(meals[td()])meals[td()].splice(i,1);
+  await sbSave(CU,'meals',meals);await renderMeals();
+}
+
+// SAVED FOODS
+async function saveCurrentFood(){
+  const name=document.getElementById('meal-name').value.trim();
+  if(!name){toast('Хоолны нэр оруулна уу');return;}
+  const kcal=parseInt(document.getElementById('mi-k').value)||0;
+  const protein=parseInt(document.getElementById('mi-p').value)||0;
+  const carbs=parseInt(document.getElementById('mi-c').value)||0;
+  const fat=parseInt(document.getElementById('mi-f').value)||0;
+  const saved=await sbLoad(CU,'savedfoods')||[];
+  if(saved.find(s=>s.name===name)){toast('Аль хэдийн хадгалсан');return;}
+  saved.push({name,kcal,protein,carbs,fat});
+  await sbSave(CU,'savedfoods',saved);toast(`⭐ "${name}" хадгаллаа`);
+}
+
+async function openSavedFoods(){
+  const saved=await sbLoad(CU,'savedfoods')||[];
+  const list=document.getElementById('sf-list');
+  if(!saved.length){list.innerHTML='<div class="empty-st"><div class="eic">⭐</div><p>Хадгалсан хоол байхгүй</p></div>';}
+  else{list.innerHTML=saved.map((f,i)=>`
+    <div class="sfi" onclick="useSavedFood(${i})">
+      <div><div class="sfi-name">${f.name}</div><div class="sfi-m">${f.kcal}ккал · 🥩${f.protein}г · 🌾${f.carbs}г · 🧈${f.fat}г</div></div>
+      <button onclick="event.stopPropagation();delSaved(${i})" style="background:none;border:none;color:var(--t3);cursor:pointer;font-size:14px">🗑️</button>
+    </div>`).join('');}
+  document.getElementById('sf-modal').classList.add('show');
+}
+async function useSavedFood(i){
+  const saved=await sbLoad(CU,'savedfoods')||[];
+  const f=saved[i];if(!f)return;
+  document.getElementById('meal-name').value=f.name;
+  document.getElementById('mi-k').value=f.kcal||'';
+  document.getElementById('mi-p').value=f.protein||'';
+  document.getElementById('mi-c').value=f.carbs||'';
+  document.getElementById('mi-f').value=f.fat||'';
+  closeSF();
+}
+async function delSaved(i){
+  const saved=await sbLoad(CU,'savedfoods')||[];saved.splice(i,1);
+  await sbSave(CU,'savedfoods',saved);openSavedFoods();
+}
+function closeSF(){document.getElementById('sf-modal').classList.remove('show');}
+document.getElementById('sf-modal').addEventListener('click',e=>{if(e.target.id==='sf-modal')closeSF();});
+
+// BODY
+async function saveBody(){
+  const w=parseFloat(document.getElementById('bm-w').value)||null;
+  if(!w){toast('Жин заавал оруулна уу');return;}
+  const bm=await sbLoad(CU,'bodymetrics')||{};
+  bm[td()]={weight:w,fat:parseFloat(document.getElementById('bm-f').value)||null,muscle:parseFloat(document.getElementById('bm-m').value)||null,visceral:parseFloat(document.getElementById('bm-v').value)||null,water:parseFloat(document.getElementById('bm-wa').value)||null,bmr:parseFloat(document.getElementById('bm-b').value)||null};
+  await sbSave(CU,'bodymetrics',bm);
+  const wt=await sbLoad(CU,'weights')||{};wt[td()]=w;await sbSave(CU,'weights',wt);
+  ['bm-w','bm-f','bm-m','bm-v','bm-wa','bm-b'].forEach(id=>document.getElementById(id).value='');
+  await renderBody();toast('✅ Хэмжилт хадгаллаа');
+}
+
+function switchMetric(metric,btn){curMetric=metric;document.querySelectorAll('.mtab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderBody();}
+
+async function renderBody(){
+  const bm=await sbLoad(CU,'bodymetrics')||{};
+  const entries=Object.entries(bm).sort((a,b)=>a[0].localeCompare(b[0]));
+  const snapCard=document.getElementById('bsnap-card'),snap=document.getElementById('bsnap');
+  if(entries.length>0){
+    snapCard.style.display='block';
+    const lat=entries[entries.length-1][1],prev=entries.length>1?entries[entries.length-2][1]:null;
+    const mets=[{k:'weight',l:'Жин',u:'кг',g:'down',ic:'⚖️'},{k:'fat',l:'Өөх%',u:'%',g:'down',ic:'🩺'},{k:'muscle',l:'Булчин',u:'кг',g:'up',ic:'💪'},{k:'visceral',l:'Висцерал',u:'',g:'down',ic:'🫀'},{k:'water',l:'Ус%',u:'%',g:'up',ic:'💧'},{k:'bmr',l:'BMR',u:'ккал',g:'',ic:'🔥'}];
+    snap.innerHTML=`<div class="bsg">${mets.map(m=>{
+      const v=lat[m.k];if(!v)return '';
+      const pv=prev?.[m.k];const diff=pv!=null?(v-pv).toFixed(1):null;
+      const good=diff!=null&&((m.g==='down'&&diff<0)||(m.g==='up'&&diff>0));
+      const bad=diff!=null&&((m.g==='down'&&diff>0)||(m.g==='up'&&diff<0));
+      const sign=diff>0?'+':'';
+      return `<div class="bsi"><div style="font-size:13px">${m.ic}</div><div class="bsv">${v}${m.u}</div><div class="bsl">${m.l}</div>${diff!=null?`<div class="bsd" style="color:${good?'var(--grn)':bad?'var(--red)':'var(--t2)'}">${sign}${diff}</div>`:''}</div>`;
+    }).join('')}</div>`;
+  } else snapCard.style.display='none';
+
+  const statEl=document.getElementById('body-stats');
+  const we=entries.filter(([,v])=>v.weight!=null);
+  if(we.length>=2){
+    const f=we[0][1].weight,l=we[we.length-1][1].weight,d=(l-f).toFixed(1),s=d>0?'+':'',c=d<=0?'var(--grn)':'var(--red)';
+    statEl.innerHTML=`<div style="display:flex;justify-content:space-around;padding:9px 0;border-top:1px solid var(--brd)">
+      <div style="text-align:center"><div style="font-size:9px;color:var(--t2);font-weight:800">ЭХНИЙ</div><div style="font-size:15px;font-weight:900">${f}кг</div></div>
+      <div style="text-align:center"><div style="font-size:9px;color:var(--t2);font-weight:800">ОДОО</div><div style="font-size:15px;font-weight:900">${l}кг</div></div>
+      <div style="text-align:center"><div style="font-size:9px;color:var(--t2);font-weight:800">ӨӨРЧЛӨЛТ</div><div style="font-size:15px;font-weight:900;color:${c}">${s}${d}кг</div></div>
+    </div>`;
+  } else statEl.innerHTML='';
+
+  if(bodyChart){bodyChart.destroy();bodyChart=null;}
+  const mc={weight:'#1f9c60',fat:'#d94f4f',muscle:'#3d77e8'},ml={weight:'Жин (кг)',fat:'Өөх (%)',muscle:'Булчин (кг)'};
+  const fil=entries.filter(([,v])=>v[curMetric]!=null);
+  if(fil.length){
+    const ctx=document.getElementById('body-chart').getContext('2d');
+    bodyChart=new Chart(ctx,{type:'line',data:{labels:fil.map(([d])=>d.slice(5).replace('-','/')),datasets:[{label:ml[curMetric],data:fil.map(([,v])=>v[curMetric]),borderColor:mc[curMetric],backgroundColor:mc[curMetric]+'14',borderWidth:2.5,pointRadius:4,pointBackgroundColor:mc[curMetric],fill:true,tension:.4}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:{size:10}}},x:{grid:{display:false},ticks:{font:{size:9}}}}}});
+  }
+
+  const listEl=document.getElementById('body-list');
+  if(!entries.length){listEl.innerHTML='<div class="empty-st"><div class="eic">⚖️</div><p>Хэмжилт байхгүй</p></div>';return;}
+  const rev=[...entries].reverse();
+  listEl.innerHTML=rev.map(([date,v],i)=>{
+    const pv=rev[i+1]?.[1];
+    const wd=pv?.weight!=null&&v.weight!=null?(v.weight-pv.weight).toFixed(1):null;
+    const s=wd>0?'+':'';
+    return `<div class="wr">
+      <div><div class="wr-d">${fmtDate(date)}</div><div style="display:flex;gap:7px;margin-top:3px;flex-wrap:wrap">${v.fat!=null?`<span style="font-size:9px;font-weight:700;color:var(--red)">🩺${v.fat}%</span>`:''} ${v.muscle!=null?`<span style="font-size:9px;font-weight:700;color:var(--blu)">💪${v.muscle}кг</span>`:''} ${v.visceral!=null?`<span style="font-size:9px;font-weight:700;color:var(--org)">🫀${v.visceral}</span>`:''} ${v.water!=null?`<span style="font-size:9px;font-weight:700;color:#00a0c0">💧${v.water}%</span>`:''}</div></div>
+      <div style="text-align:right">${wd!=null?`<div class="wr-df ${wd<=0?'dn':'up'}">${s}${wd}кг</div>`:''}<div class="wr-v">${v.weight||'—'}кг</div></div>
+    </div>`;
+  }).join('');
+}
+
+// HISTORY
+async function renderHistory(){
+  const habits=await sbLoad(CU,'habits')||{};
+  const meals=await sbLoad(CU,'meals')||{};
+  const tasks=getTasks();
+  const list=document.getElementById('history-list');
+  const today=new Date(td());let html='';
+  for(let i=0;i<14;i++){
+    const d=new Date(today);d.setDate(d.getDate()-i);
+    const key=d.toISOString().split('T')[0];
+    const h=habits[key]||{},dm=meals[key]||[];
+    const done=tasks.filter(t=>h[t.id]).length,total=tasks.length;
+    const pct=total>0?Math.round(done/total*100):0;
+    const color=pct>=80?'var(--grn)':pct>=50?'var(--org)':'var(--red)';
+    html+=`<div class="hdc">
+      <div class="hdh" onclick="toggleHist('hd${i}')">
+        <div><div class="hdd">${i===0?'Өнөөдөр':fmtDate(key)}</div>
+          <div style="width:110px;height:3px;background:var(--surf2);border-radius:2px;overflow:hidden;margin-top:4px"><div style="height:100%;width:${pct}%;background:${color};border-radius:2px"></div></div>
+        </div>
+        <div style="text-align:right"><div class="hdsc" style="color:${color}">${pct}%</div><div style="font-size:9px;color:var(--t2)">${done}/${total}</div></div>
+      </div>
+      <div class="hdbody" id="hd${i}">
+        <div style="margin-bottom:9px">${tasks.map(t=>`<div class="htr"><span style="font-size:13px">${h[t.id]?'✅':'⬜'}</span><span style="font-size:12px;font-weight:${h[t.id]?700:400};color:${h[t.id]?'var(--t1)':'var(--t2)'}">${t.icon} ${t.name}</span></div>`).join('')}</div>
+        ${dm.length?`<div style="border-top:1px solid var(--brd);padding-top:7px"><div style="font-size:9px;font-weight:800;color:var(--t3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px">Хоол</div>${dm.map(m=>`<div class="hmr"><span style="font-size:9px;background:var(--grns);color:var(--grn);font-weight:800;padding:2px 5px;border-radius:5px;margin-right:5px">${m.type}</span>${m.name}${m.kcal?` <span style="color:var(--t3)">${m.kcal}ккал</span>`:''}</div>`).join('')}</div>`:''}
+      </div>
+    </div>`;
+  }
+  list.innerHTML=html||'<div class="empty-st"><div class="eic">📅</div><p>Өгөгдөл байхгүй</p></div>';
+}
+function toggleHist(id){const el=document.getElementById(id);if(el)el.classList.toggle('open');}
+
+// COMPARE
+function calcStreakFor(habits){
+  let s=0;const today=new Date(td());const tasks=DEFAULT_TASKS;
+  for(let i=0;i<14;i++){
+    const d=new Date(today);d.setDate(d.getDate()-i);
+    const key=d.toISOString().split('T')[0];
+    const h=habits[key]||{};const done=tasks.filter(t=>h[t.id]).length;
+    if(done>=Math.ceil(tasks.length/2))s++;else if(i>0)break;
+  }
+  return s;
+}
+
+async function renderCompare(){
+  const users=['bataa','byambaa'],allData={};
+  for(const u of users){
+    const habits=await sbLoad(u,'habits')||{};
+    const bm=await sbLoad(u,'bodymetrics')||{};
+    allData[u]={habits,bm};
+  }
+  const stats={};
+  for(const u of users){
+    const habits=allData[u].habits;
+    let totP=0,totD=0;const tc={};
+    DEFAULT_TASKS.forEach(t=>tc[t.id]=0);
+    const today=new Date(td());
+    for(let i=0;i<14;i++){
+      const d=new Date(today);d.setDate(d.getDate()-i);
+      const key=d.toISOString().split('T')[0];
+      const h=habits[key]||{};const done=DEFAULT_TASKS.filter(t=>h[t.id]).length;
+      if(Object.keys(habits).includes(key)||done>0){totP+=done/DEFAULT_TASKS.length*100;totD++;}
+      DEFAULT_TASKS.forEach(t=>{if(h[t.id])tc[t.id]++;});
+    }
+    stats[u]={avg:totD>0?Math.round(totP/totD):0,streak:calcStreakFor(habits),tc,days:totD};
+  }
+
+  [['bataa','cp-b-p','cp-b-s','cp-b-m'],['byambaa','cp-y-p','cp-y-s','cp-y-m']].forEach(([u,pp,sp,mp])=>{
+    const s=stats[u];
+    document.getElementById(pp).textContent=s.avg+'%';
+    document.getElementById(sp).textContent=`🔥 ${s.streak} өдөр`;
+    document.getElementById(mp).innerHTML=DEFAULT_TASKS.map(t=>{
+      const p=s.days>0?Math.round(s.tc[t.id]/Math.max(s.days,1)*100):0;
+      const c=p>=70?'var(--grn)':p>=40?'var(--org)':'var(--red)';
+      return `<div style="display:flex;align-items:center;gap:4px"><span style="font-size:9px">${t.icon}</span><div style="flex:1;height:4px;background:var(--surf2);border-radius:2px;overflow:hidden"><div style="height:100%;width:${p}%;background:${c};border-radius:2px"></div></div><span style="font-size:8px;font-weight:800;color:var(--t2);min-width:24px;text-align:right">${p}%</span></div>`;
+    }).join('');
+  });
+
+  const tbEl=document.getElementById('task-bd');
+  tbEl.innerHTML=DEFAULT_TASKS.map(task=>{
+    const bp=stats.bataa.days>0?Math.round(stats.bataa.tc[task.id]/Math.max(stats.bataa.days,1)*100):0;
+    const yp=stats.byambaa.days>0?Math.round(stats.byambaa.tc[task.id]/Math.max(stats.byambaa.days,1)*100):0;
+    const bc=bp>=80?'var(--grn)':bp>=50?'var(--org)':'var(--red)';
+    const yc=yp>=80?'var(--grn)':yp>=50?'var(--org)':'var(--red)';
+    return `<div style="padding:9px 0;border-bottom:1px solid var(--brd)">
+      <div style="font-size:12px;font-weight:700;margin-bottom:6px">${task.icon} ${task.name}</div>
+      <div style="display:flex;gap:5px;align-items:center;margin-bottom:3px"><span style="font-size:9px;min-width:14px">👨</span><div style="flex:1;height:6px;background:var(--surf2);border-radius:3px;overflow:hidden"><div style="height:100%;width:${bp}%;background:${bc};border-radius:3px"></div></div><span style="font-size:10px;font-weight:800;color:${bc};min-width:30px;text-align:right">${bp}%</span></div>
+      <div style="display:flex;gap:5px;align-items:center"><span style="font-size:9px;min-width:14px">👩</span><div style="flex:1;height:6px;background:var(--surf2);border-radius:3px;overflow:hidden"><div style="height:100%;width:${yp}%;background:${yc};border-radius:3px"></div></div><span style="font-size:10px;font-weight:800;color:${yc};min-width:30px;text-align:right">${yp}%</span></div>
+    </div>`;
+  }).join('');
+
+  if(cmpChart){cmpChart.destroy();cmpChart=null;}
+  const labels=[],bd=[],yd=[];const today2=new Date(td());
+  for(let i=13;i>=0;i--){
+    const d=new Date(today2);d.setDate(d.getDate()-i);const key=d.toISOString().split('T')[0];
+    labels.push(`${d.getMonth()+1}/${d.getDate()}`);
+    const bh=allData.bataa.habits[key]||{},yh=allData.byambaa.habits[key]||{};
+    bd.push(Math.round(DEFAULT_TASKS.filter(t=>bh[t.id]).length/DEFAULT_TASKS.length*100));
+    yd.push(Math.round(DEFAULT_TASKS.filter(t=>yh[t.id]).length/DEFAULT_TASKS.length*100));
+  }
+  const ctx=document.getElementById('cmp-chart').getContext('2d');
+  cmpChart=new Chart(ctx,{type:'bar',data:{labels,datasets:[{label:'Батаа',data:bd,backgroundColor:'rgba(61,119,232,.7)',borderRadius:3},{label:'Бямбажав',data:yd,backgroundColor:'rgba(232,135,58,.7)',borderRadius:3}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{font:{size:9},boxWidth:9}}},scales:{y:{min:0,max:100,ticks:{callback:v=>v+'%',font:{size:9}},grid:{color:'rgba(0,0,0,0.04)'}},x:{grid:{display:false},ticks:{font:{size:8}}}}}});
+
+  const cwEl=document.getElementById('cmp-weight');
+  cwEl.innerHTML=users.map(u=>{
+    const info=USERS[u],bmE=Object.entries(allData[u].bm).sort((a,b)=>a[0].localeCompare(b[0]));
+    const first=bmE[0]?.[1]?.weight,last=bmE[bmE.length-1]?.[1]?.weight;
+    const diff=first&&last?(last-first).toFixed(1):null,sign=diff&&diff>0?'+':'';
+    const lat=bmE[bmE.length-1]?.[1]||{};
+    return `<div style="padding:10px 0;border-bottom:1px solid var(--brd)">
+      <div style="display:flex;align-items:center;gap:9px;margin-bottom:5px">
+        <span style="font-size:20px">${info.avatar}</span>
+        <div style="flex:1"><div style="font-size:12px;font-weight:800">${info.name}</div><div style="font-size:10px;color:var(--t2)">${first?first+'кг → ':''} ${last?last+'кг':'-'}</div></div>
+        ${diff!==null?`<div style="font-size:14px;font-weight:900;color:${diff<=0?'var(--grn)':'var(--red)'}">${sign}${diff}кг</div>`:'<span style="color:var(--t3);font-size:11px">—</span>'}
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:5px">
+        ${lat.fat!=null?`<span style="font-size:9px;font-weight:700;color:var(--red);background:var(--reds);padding:2px 6px;border-radius:6px">🩺${lat.fat}%</span>`:''}
+        ${lat.muscle!=null?`<span style="font-size:9px;font-weight:700;color:var(--blu);background:var(--blus);padding:2px 6px;border-radius:6px">💪${lat.muscle}кг</span>`:''}
+        ${lat.visceral!=null?`<span style="font-size:9px;font-weight:700;color:var(--org);background:var(--orgs);padding:2px 6px;border-radius:6px">🫀${lat.visceral}</span>`:''}
+      </div>
+    </div>`;
+  }).join('');
+  window._cmpStats={stats,allData};
+}
+
+// AI
+async function loadAI(){
+  const btn=document.getElementById('ai-btn'),content=document.getElementById('ai-content');
+  btn.textContent='...';btn.disabled=true;
+  content.innerHTML=`<div style="text-align:center;padding:18px;color:var(--t2)"><div style="font-size:18px;animation:spin 1s linear infinite;display:inline-block">⏳</div><br><span style="font-size:11px;font-weight:700">Анализ хийж байна...</span></div>`;
+  if(!window._cmpStats)await renderCompare();
+  const {stats,allData}=window._cmpStats||{};
+  if(!stats){content.innerHTML='<div style="color:var(--red);font-size:11px;padding:12px">Өгөгдөл хангалтгүй</div>';btn.textContent='Шинэчлэх';btn.disabled=false;return;}
+  let ds='';
+  for(const u of['bataa','byambaa']){
+    const info=USERS[u],s=stats[u];
+    const bmE=Object.entries(allData[u].bm).sort((a,b)=>a[0].localeCompare(b[0]));
+    const lat=bmE[bmE.length-1]?.[1]||{};
+    ds+=`\n${info.name} (${u==='bataa'?'Аав, 53 нас, висцерал өөх өндөр, чихэр их иддэг':'Ээж, 46 нас, биеийн өөх 35%, хөдөлгөөн хийдэггүй'}):\n`;
+    ds+=`  Дундаж: ${s.avg}%, Streak: ${s.streak}, Идэвхтэй өдөр: ${s.days}\n`;
+    DEFAULT_TASKS.forEach(t=>{const p=s.days>0?Math.round(s.tc[t.id]/Math.max(s.days,1)*100):0;ds+=`  ${t.icon} ${t.name}: ${p}% (${s.tc[t.id]}/${s.days})\n`;});
+    if(lat.weight)ds+=`  Жин: ${lat.weight}кг${lat.fat?`, Өөх: ${lat.fat}%`:''}${lat.muscle?`, Булчин: ${lat.muscle}кг`:''}\n`;
+  }
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:
+        `Та эрүүл мэндийн туслах. Монгол хэлээр анализ хийж HTML-ээр буцаана уу.\n${ds}\nДараах бүтцээр бич: 1) Ерөнхий дүгнэлт 2) Батаа — биелүүлээгүй task-ийн ЯАГААД тайлбартай зөвлөгөө 3) Бямбажав — мөн адил 4) Хамтын урам зориг. Товч, 300-400 үг. HTML div/strong/span ашиглаж болно.`
+      }]})});
+    const data=await resp.json();
+    const text=data.content?.map(c=>c.text||'').join('')||'Хариу ирсэнгүй';
+    content.innerHTML=`<div style="font-size:12px;line-height:1.7;color:var(--t1)">${text}</div>`;
+  }catch(e){content.innerHTML=`<div style="color:var(--red);font-size:11px;padding:12px">Холболтын алдаа</div>`;}
+  btn.textContent='Шинэчлэх';btn.disabled=false;
+}
+
+// WIN
+function showWin(streak){
+  const info=USERS[CU];
+  document.getElementById('win-title').textContent=`${info.name}, өнөөдөр 100%! 🏆`;
+  document.getElementById('win-streak').textContent=`🔥 ${streak} өдөр тасралтгүй`;
+  document.getElementById('win-tasks').innerHTML=getTasks().map(t=>`<div style="background:var(--grns);border:1.5px solid var(--grnm);border-radius:8px;padding:6px 10px;font-size:11px;font-weight:800;color:var(--grn)">${t.icon} ${t.name}</div>`).join('');
+  document.getElementById('win-screen').classList.add('show');startConfetti();
+}
+function closeWin(){document.getElementById('win-screen').classList.remove('show');stopConfetti();}
+
+let confAnim=null;
+function startConfetti(){
+  const canvas=document.getElementById('cc');const W=canvas.width=window.innerWidth,H=canvas.height=window.innerHeight;
+  const ctx=canvas.getContext('2d');
+  const cols=['#1f9c60','#e8873a','#3d77e8','#d4a820','#d94f4f','#8b5cf6'];
+  const ps=Array.from({length:100},()=>({x:Math.random()*W,y:Math.random()*H-H,r:Math.random()*6+3,color:cols[Math.floor(Math.random()*cols.length)],vx:(Math.random()-.5)*3,vy:Math.random()*4+2,angle:Math.random()*360,spin:(Math.random()-.5)*5}));
+  function draw(){ctx.clearRect(0,0,W,H);ps.forEach(p=>{ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.angle*Math.PI/180);ctx.fillStyle=p.color;ctx.fillRect(-p.r/2,-p.r/2,p.r,p.r*.4);ctx.restore();p.x+=p.vx;p.y+=p.vy;p.angle+=p.spin;if(p.y>H){p.y=-10;p.x=Math.random()*W;}});confAnim=requestAnimationFrame(draw);}
+  draw();
+}
+function stopConfetti(){if(confAnim){cancelAnimationFrame(confAnim);confAnim=null;}document.getElementById('cc').getContext('2d').clearRect(0,0,window.innerWidth,window.innerHeight);}
+
+// UTILS
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+let tt=null;function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>el.classList.remove('show'),2400);}
+
+window.addEventListener('load',async()=>{
+  initSB();const sess=localStorage.getItem('hc14_sess');
+  if(sess&&USERS[sess]){CU=sess;showScreen('app-screen');await initApp();}
+});
+</script>
+</body>
+</html>
