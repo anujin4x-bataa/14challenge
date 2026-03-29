@@ -289,7 +289,7 @@ body{font-family:var(--fn);background:var(--bg);color:var(--t1);min-height:100dv
           <div class="hero-rc"><div class="hero-rn" id="day-num">1</div><div class="hero-rs">ХОНОГ</div></div>
         </div>
         <div>
-          <div class="hero-badge" id="hero-dl">1-р өдөр · 14 өдөр </div>
+          <div class="hero-badge" id="hero-dl">1-р өдөр · 14-с</div>
           <div style="display:flex;align-items:baseline;gap:2px;margin-bottom:5px">
             <div class="hero-pct" id="hero-pct">0%</div>
             <div class="hero-pct-sub" id="hero-sub">· 0/7</div>
@@ -310,7 +310,7 @@ body{font-family:var(--fn);background:var(--bg);color:var(--t1);min-height:100dv
     </div>
 
     <!-- Personal strategy card — collapsible -->
-    <div id="strategy-card" class="card" style="border-left:4px solid var(--grn);cursor:pointer" onclick="toggleStrategyCard()">
+    <div id="strategy-card" class="mot-card" style="cursor:pointer" onclick="toggleStrategyCard()">
       <div style="display:flex;align-items:center;justify-content:space-between">
         <div style="display:flex;align-items:center;gap:9px">
           <div id="strategy-card-avatar" style="font-size:22px">👨</div>
@@ -431,26 +431,35 @@ body{font-family:var(--fn);background:var(--bg);color:var(--t1);min-height:100dv
     <div class="card"><div class="ctitle">Бүртгэлийн түүх</div><div id="body-list"></div></div>
   </div>
 
-  <!-- HISTORY TAB -->
-  <div class="tab-c" id="tab-history">
-    <div class="card"><div class="ctitle">14 Хоногийн түүх</div><div id="history-list"></div></div>
-  </div>
-
-  <!-- COMPARE TAB -->
-  <div class="tab-c" id="tab-compare">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-      <div class="ccard"><div class="cav">👨</div><div class="cnm">Батаа</div><div class="cpct" id="cp-b-p">—</div><div class="cstr" id="cp-b-s">🔥 0 өдөр</div><div class="cmini" id="cp-b-m"></div></div>
-      <div class="ccard"><div class="cav">👩</div><div class="cnm">Бямбажав</div><div class="cpct" id="cp-y-p">—</div><div class="cstr" id="cp-y-s">🔥 0 өдөр</div><div class="cmini" id="cp-y-m"></div></div>
+  <!-- STATS TAB (History + Compare) -->
+  <div class="tab-c" id="tab-stats">
+    <!-- Sub-nav -->
+    <div style="display:flex;gap:4px;background:var(--surf2);padding:4px;border-radius:12px;border:1px solid var(--brd)">
+      <button id="stats-sub-hist" onclick="switchStatsSub('hist')" style="flex:1;padding:8px;border:none;border-radius:9px;font-size:12px;font-weight:800;cursor:pointer;font-family:var(--fn);background:var(--surf);color:var(--t1);box-shadow:0 1px 4px rgba(0,0,0,.08)">📅 Түүх</button>
+      <button id="stats-sub-cmp" onclick="switchStatsSub('cmp')" style="flex:1;padding:8px;border:none;border-radius:9px;font-size:12px;font-weight:800;cursor:pointer;font-family:var(--fn);background:transparent;color:var(--t2)">📊 Харьцуул</button>
     </div>
-    <div class="card"><div class="ctitle">Даалгаврын биелэлт</div><div id="task-bd"></div></div>
-    <div class="card"><div class="ctitle">14 Хоногийн явц</div><div class="chart-wrap" style="height:185px"><canvas id="cmp-chart"></canvas></div></div>
-    <div class="card"><div class="ctitle">Жин & Бие</div><div id="cmp-weight"></div></div>
-    <div class="card">
-      <div class="ctitle-row">
-        <div class="ctitle">🤖 AI Анализ</div>
-        <button onclick="loadAI()" id="ai-btn" style="background:linear-gradient(135deg,var(--grn),var(--grn2));color:#fff;border:none;border-radius:8px;padding:6px 12px;font-size:11px;font-weight:800;cursor:pointer;font-family:var(--fn)">Шинэчлэх</button>
+
+    <!-- HISTORY sub-tab -->
+    <div id="stats-hist">
+      <div class="card"><div id="history-list"></div></div>
+    </div>
+
+    <!-- COMPARE sub-tab -->
+    <div id="stats-cmp" style="display:none;flex-direction:column;gap:12px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="ccard"><div class="cav">👨</div><div class="cnm">Батаа</div><div class="cpct" id="cp-b-p">—</div><div class="cstr" id="cp-b-s">🔥 0 өдөр</div><div class="cmini" id="cp-b-m"></div></div>
+        <div class="ccard"><div class="cav">👩</div><div class="cnm">Бямбажав</div><div class="cpct" id="cp-y-p">—</div><div class="cstr" id="cp-y-s">🔥 0 өдөр</div><div class="cmini" id="cp-y-m"></div></div>
       </div>
-      <div id="ai-content"><div class="empty-st"><div class="eic">🤖</div><p>Товчийг дарж AI анализ харна уу</p></div></div>
+      <div class="card"><div class="ctitle">Даалгаврын биелэлт</div><div id="task-bd"></div></div>
+      <div class="card"><div class="ctitle">14 Хоногийн явц</div><div class="chart-wrap" style="height:185px"><canvas id="cmp-chart"></canvas></div></div>
+      <div class="card"><div class="ctitle">Жин & Бие</div><div id="cmp-weight"></div></div>
+      <div class="card">
+        <div class="ctitle-row">
+          <div class="ctitle">🤖 AI Анализ</div>
+          <button onclick="loadAI()" id="ai-btn" style="background:linear-gradient(135deg,var(--grn),var(--grn2));color:#fff;border:none;border-radius:8px;padding:6px 12px;font-size:11px;font-weight:800;cursor:pointer;font-family:var(--fn)">Шинэчлэх</button>
+        </div>
+        <div id="ai-content"><div class="empty-st"><div class="eic">🤖</div><p>Товчийг дарж AI анализ харна уу</p></div></div>
+      </div>
     </div>
   </div>
 
@@ -459,15 +468,13 @@ body{font-family:var(--fn);background:var(--bg);color:var(--t1);min-height:100dv
     <button class="nav-btn active" onclick="switchTab('home',this)"><div class="nav-icon">🏠</div><div class="nav-lbl">Нүүр</div><div class="nav-dot"></div></button>
     <button class="nav-btn" onclick="switchTab('food',this)"><div class="nav-icon">🥗</div><div class="nav-lbl">Хоол</div><div class="nav-dot"></div></button>
     <button class="nav-btn" onclick="switchTab('body',this)"><div class="nav-icon">⚖️</div><div class="nav-lbl">Бие</div><div class="nav-dot"></div></button>
-    <button class="nav-btn" onclick="switchTab('history',this)"><div class="nav-icon">📅</div><div class="nav-lbl">Түүх</div><div class="nav-dot"></div></button>
-    <button class="nav-btn" onclick="switchTab('compare',this)"><div class="nav-icon">📊</div><div class="nav-lbl">Харьцуул</div><div class="nav-dot"></div></button>
+    <button class="nav-btn" onclick="switchTab('stats',this)"><div class="nav-icon">📊</div><div class="nav-lbl">Статистик</div><div class="nav-dot"></div></button>
     <button class="nav-btn" onclick="switchTab('awards',this)"><div class="nav-icon">🏆</div><div class="nav-lbl">Шагнал</div><div class="nav-dot"></div></button>
   </nav>
-</div>
 
-  <!-- AWARDS TAB -->
+  <!-- AWARDS TAB — inside app-screen -->
   <div class="tab-c" id="tab-awards">
-    <div id="awards-summary-card"></div>
+    <div class="card" id="awards-summary-card2"></div>
     <div class="card">
       <div class="ctitle">Бүх шагнал</div>
       <div id="awards-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px"></div>
@@ -487,6 +494,7 @@ body{font-family:var(--fn);background:var(--bg);color:var(--t1);min-height:100dv
       </div>
     </div>
   </div>
+</div>
 
 <!-- TASK MANAGER MODAL -->
 <div class="modal-ov" id="task-modal">
@@ -527,8 +535,8 @@ const USERS={
     weight:86.8, fatPct:29.7, visceral:19, muscle:58.2,
     goalWeight:-2.5, goalFat:-2, goalVisceral:-2,
     bmi:30.8,
-    analysis:'BMI 30.8 · Өөх 29.7% · Висцерал өөх 19 — маш өндөр',
-    strategy:'Чихэр + их хоол багасгах = 70% үр дүн',
+    analysis:'BMI 30.8 · Өөх 29.7% · Дотор өөх 19 — маш өндөр',
+    strategy:'Чихэр хасах + хөдөлгөөн нэмэх = амжилт',
     strategyDetail:'Висцерал өөх таны хамгийн том эрсдэл. Чихэр зогсоох л хамгийн хурдан өөрчлөлт авчирна.',
     advantages:'Булчин сайн (58.2кг) → хурдан турна · Алхдаг → суурь хөдөлгөөн байна',
     exercise:'8,000–12,000 алхам + 20 мин: squat, push-up, plank',
@@ -548,9 +556,9 @@ const USERS={
     goalWeight:-1.5, goalFat:-3, goalMuscle:0.7,
     bmi:24.4,
     analysis:'BMI 24.4 хэвийн · Гэхч өөх 35.3% — "Skinny fat"',
-    strategy:'Хөдөлгөөн нэмэх + уураг нэмэх = шийдэл',
+    strategy:'Хөдөлгөөн нэмэх + уураг нэмэх = амжилт',
     strategyDetail:'Жин хэвийн ч биеийн өөхний хувь өндөр. Булчин нэмэх нь метаболизмыг дэмжинэ.',
-    advantages:'Жин бага → хурдан өөрчлөгдөнө · Висцерал өөх хэвийн (6.5)',
+    advantages:'Жин бага → хурдан өөрчлөгдөнө · Дотор өөх хэвийн (6.5)',
     exercise:'6,000–8,000 алхам + 15-20 мин: squat, glute bridge, plank',
     meals:{
       morning:'Тараг + жимс / өндөг',
@@ -581,7 +589,7 @@ function getTasks(){
 }
 
 const MOTIVATIONS=[
-  {t:'Аливаа ажлыг эхлүүлнэ гэдэг ажлынхаа 50%-ийг хийсэн гэсэн үг'},
+  {t:'Аливаа ажлыг эхлүүлнэ гэдэг ажлынхаа 50%-ийг хийсэн гэсэн үг',a:'Монгол цэцэн үг'},
   {t:'Биеийн эрүүл мэнд бол хамгийн том баялаг.',a:'Вирджил'},
   {t:'Хэцүү замаар явсан хүн хамгийн гоё газарт хүрдэг.',a:'Зиг Зиглар'},
   {t:'Амжилт бол дадал хэвшлийн нийлбэр.',a:'Аристотель'},
@@ -634,7 +642,7 @@ async function syncToSupabase(){
 
 // ==================== ACHIEVEMENTS ====================
 const ACHIEVEMENTS=[
-  {id:'start',     icon:'🌱',name:'Сорилт эхлэлээ',     desc:'Аппд нэвтэрч бүртгэлтэй болсон',    check:s=>s.totalDays>=1,   pts:20},
+  {id:'start',     icon:'🌱',name:'Сорилт эхлэв',     desc:'Аппд нэвтэрч бүртгэлтэй болсон',    check:s=>s.totalDays>=1,   pts:20},
   {id:'perfect1',  icon:'⭐',name:'Анхны 100%',          desc:'Нэг өдөр бүх task биелүүл',          check:s=>s.perfectDays>=1, pts:30},
   {id:'streak3',   icon:'🔥',name:'3 хоног тасралтгүй', desc:'Гурав дараалсан өдөр ≥50% биелүүл',  check:s=>s.streak>=3,      pts:40},
   {id:'nosugar3',  icon:'🚫',name:'3 хоног чихэргүй',   desc:'3 хоног чихэр идэхгүй байх',         check:s=>s.nosugarDays>=3, pts:30},
@@ -653,7 +661,7 @@ const ACHIEVEMENTS=[
   {id:'weight5',   icon:'📉',name:'5 удаа хэмжилт',      desc:'5 удаа жин хэмжсэн',                check:s=>s.weightEntries>=5,pts:50},
   {id:'perfect14', icon:'💎',name:'14 төгс өдөр',        desc:'14 удаа 100% биелүүл',               check:s=>s.perfectDays>=14,pts:100},
   {id:'nosugar14', icon:'🦷',name:'14 хоног чихэргүй',   desc:'14 хоног бүр чихэр идэхгүй',         check:s=>s.nosugarDays>=14,pts:70},
-  {id:'streak14',  icon:'👑',name:'14 хоног байлдан!',   desc:'Бүх 14 хоногийг дуусгах',             check:s=>s.streak>=14,     pts:100},
+  {id:'streak14',  icon:'👑',name:'14 хоног амжилттай!',   desc:'Бүх 14 хоногийг дуусгах',             check:s=>s.streak>=14,     pts:100},
 ];
 
 function calcAchStats(habits,bm){
@@ -661,7 +669,7 @@ function calcAchStats(habits,bm){
   let streak=0,perfectDays=0,foodDays=0,nosugarDays=0,stepsDays=0,sleepDays=0,detoxDays=0,stretchDays=0,exerciseDays=0,totalDays=0;
   for(let i=0;i<14;i++){
     const d=new Date(today);d.setDate(d.getDate()-i);
-    const key=d.toISOString().split('T')[0];
+    const key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
     const h=habits[key]||{};
     const done=tasks.filter(t=>h[t.id]).length;
     if(done>0||habits[key])totalDays++;
@@ -685,10 +693,9 @@ async function renderAwards(){
   const pts=unlocked.reduce((t,a)=>t+a.pts,0);
   const maxPts=ACHIEVEMENTS.reduce((t,a)=>t+a.pts,0);
 
-  // Summary
-  const sumCard=document.getElementById('awards-summary-card');
-  sumCard.className='card';
-  sumCard.innerHTML=`
+  // Summary — inject card into wrapper (no pre-existing empty element)
+  const sc=document.getElementById('awards-summary-card2');
+  sc.innerHTML=`
     <div style="display:flex;align-items:center;gap:14px">
       <div style="width:58px;height:58px;border-radius:16px;background:linear-gradient(135deg,#FEF9E0,#FDE68A);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;box-shadow:0 3px 12px rgba(212,168,32,.2)">🏆</div>
       <div style="flex:1">
@@ -700,7 +707,8 @@ async function renderAwards(){
         <div style="font-size:22px;font-weight:900;color:var(--grn)">${unlocked.length}</div>
         <div style="font-size:9px;font-weight:800;color:var(--t2);text-transform:uppercase;letter-spacing:.3px">/ ${ACHIEVEMENTS.length}<br>шагнал</div>
       </div>
-    </div>`;
+    </div>
+  </div>`;
 
   // Grid
   document.getElementById('awards-grid').innerHTML=[...unlocked,...locked].map(a=>{
@@ -826,7 +834,7 @@ async function initApp(){
 
   updateDetoxUI();
   renderExercise();
-  await renderScore();await renderTasks();await renderMeals();await renderBody();await renderHistory();
+  await renderScore();await renderTasks();await renderMeals();await renderBody();
   renderStrategyCard();
   renderPersonalMeals();
 
@@ -889,7 +897,7 @@ async function renderScore(){
   document.getElementById('hero-sub').textContent=`· ${done}/${total}`;
   document.getElementById('hero-bar').style.width=pct+'%';
   document.getElementById('hero-ht').textContent=pct===100?'🎉 Өнөөдөр бүгдийг биелүүллээ!':`${total-done} даалгавар үлдлээ`;
-  document.getElementById('hero-remain').textContent=pct<100?`${total-done} үлдлээ`:'';
+  document.getElementById('hero-remain').textContent='';
   document.getElementById('streak-pill').textContent=`🔥 ${streak} өдөр тасралтгүй`;
   if(pct===100){const wk='win_'+td();if(!localStorage.getItem(wk)){localStorage.setItem(wk,'1');setTimeout(()=>showWin(streak),700);}}
 }
@@ -901,9 +909,26 @@ function switchTab(tab, btn){
   if(btn) btn.classList.add('active');
   const el=document.getElementById('tab-'+tab);
   if(el) el.classList.add('active');
-  if(tab==='compare') renderCompare();
-  if(tab==='history') renderHistory();
+  if(tab==='stats'){renderHistory();} // load history by default
   if(tab==='awards') renderAwards();
+}
+
+function switchStatsSub(sub){
+  const hist=document.getElementById('stats-hist');
+  const cmp=document.getElementById('stats-cmp');
+  const bh=document.getElementById('stats-sub-hist');
+  const bc=document.getElementById('stats-sub-cmp');
+  if(sub==='hist'){
+    hist.style.display='block';cmp.style.display='none';
+    bh.style.background='var(--surf)';bh.style.color='var(--t1)';bh.style.boxShadow='0 1px 4px rgba(0,0,0,.08)';
+    bc.style.background='transparent';bc.style.color='var(--t2)';bc.style.boxShadow='none';
+    renderHistory();
+  } else {
+    hist.style.display='none';cmp.style.display='flex';
+    bc.style.background='var(--surf)';bc.style.color='var(--t1)';bc.style.boxShadow='0 1px 4px rgba(0,0,0,.08)';
+    bh.style.background='transparent';bh.style.color='var(--t2)';bh.style.boxShadow='none';
+    renderCompare();
+  }
 }
 
 function calcStreak(habits){
@@ -1005,7 +1030,7 @@ function renderStrategyCard(){
   const ttl=document.getElementById('strategy-card-title');
   const sub=document.getElementById('strategy-card-sub');
   if(av) av.textContent=u.avatar;
-  if(ttl) ttl.textContent=`${u.name}н төлөвлөгөө`;
+  if(ttl) ttl.textContent=(CU==='bataa'?'Батаагийн':'Бямбажавын')+' төлөвлөгөө';
   if(sub) sub.textContent=`🎯 ${u.strategy}`;
 
   // Fill body (shown on expand)
@@ -1052,16 +1077,16 @@ function renderExercise(){
   const exercises=isBataa?[
     {ic:'🏋️',n:'Сууж босох',sub:'Squat · 3×15'},
     {ic:'💪',n:'Суниах',sub:'Push-up · 3×10'},
-    {ic:'🧘',n:'Биеээ өргөж хэвтэх',sub:'Plank · 3×30с'},
-    {ic:'🦵',n:'Дээшээ харж хэвтэж байгаад хөлөө дээш доош',sub:'Leg raise · 3×12'},
-    {ic:'🔄',n:'Доошоо харж хэвтэж байгаад хөл гараа дээшээ сарвайх',sub:'Superman · 3×10'},
+    {ic:'🧘',n:'Доош харж хэвтэж байгаад биеэ өргөх',sub:'Plank · 3×30с'},
+    {ic:'🦵',n:'Дээш харж хэвтэж байгаад хөлөө өргөх',sub:'Leg raise · 3×12'},
+    {ic:'🔄',n:'Доош харж хэвтэж байгаад гар хөлөө сарвайх',sub:'Superman · 3×10'},
     {ic:'🌿',n:'Гуя сунгах',sub:'Hamstring stretch · 30с'},
   ]:[
     {ic:'🏋️',n:'Сууж босох',sub:'Squat · 3×15'},
-    {ic:'🍑',n:'Дээш харж хэвтэж байгаад хэвлий гуяа өргөх',sub:'Glute bridge · 3×20'},
-    {ic:'🧘',n:'Биеээ өргөж хэвтэх',sub:'Plank · 3×30с'},
+    {ic:'🍑',n:'Дээш харж хэвтэж байгаад хэвлийгээ өргөх',sub:'Glute bridge · 3×20'},
+    {ic:'🧘',n:'Доош харж хэвтэж байгаад биеэ өргөх',sub:'Plank · 3×30с'},
     {ic:'🦵',n:'Хажуу хөлөө өргөх',sub:'Side leg raise · 3×15'},
-    {ic:'🌿',n:'4 хөллөж сууж байгаад нуруугаа бөгтийлгөх',sub:'Cat-cow · 1 мин'},
+    {ic:'🌿',n:'Доош дөрөв хөллөж бөгтийх, гэдийх',sub:'Cat-cow · 1 мин'},
     {ic:'💆',n:'Мөр сунгах',sub:'Shoulder stretch · 30с'},
   ];
   listEl.innerHTML=exercises.map(ex=>`
@@ -1224,8 +1249,10 @@ async function renderHistory(){
   const profile=await sbLoad(CU,'profile');
   if(!profile||!profile.startDate){list.innerHTML='<div class="empty-st"><div class="eic">📅</div><p>Өгөгдөл байхгүй</p></div>';return;}
 
-  const start=new Date(profile.startDate+'T00:00:00');
-  const today=new Date(td()+'T00:00:00');
+  const [sy,sm,sd]=profile.startDate.split('-').map(Number);
+  const start=new Date(sy,sm-1,sd);
+  const [ty,tm,tday]=td().split('-').map(Number);
+  const today=new Date(ty,tm-1,tday);
   let html='';
 
   for(let i=0;i<14;i++){
@@ -1239,12 +1266,18 @@ async function renderHistory(){
     const color=pct>=80?'var(--grn)':pct>=50?'var(--org)':'var(--t3)';
     const isToday=key===td();
     const dayLabel=isToday?`${i+1}-р өдөр · Өнөөдөр`:`${i+1}-р өдөр · ${fmtDate(key)}`;
+    // Task checkmarks inline in collapsed header
+    const taskIcons=tasks.map(t=>h[t.id]?`<span style="font-size:13px" title="${t.name}">✅</span>`:`<span style="font-size:13px;opacity:.25" title="${t.name}">⬜</span>`).join('');
     html+=`<div class="hdc">
       <div class="hdh" onclick="toggleHist('hd${i}')">
-        <div><div class="hdd">${dayLabel}</div>
-          <div style="width:110px;height:3px;background:var(--surf2);border-radius:2px;overflow:hidden;margin-top:4px"><div style="height:100%;width:${pct}%;background:${color};border-radius:2px"></div></div>
+        <div style="flex:1">
+          <div class="hdd">${dayLabel}</div>
+          <div style="display:flex;gap:2px;margin-top:5px;flex-wrap:wrap">${taskIcons}</div>
         </div>
-        <div style="text-align:right"><div class="hdsc" style="color:${color}">${pct>0?pct+'%':'—'}</div><div style="font-size:9px;color:var(--t2)">${done}/${total}</div></div>
+        <div style="text-align:right;flex-shrink:0;padding-left:8px">
+          <div class="hdsc" style="color:${color}">${pct>0?pct+'%':'—'}</div>
+          <div style="font-size:9px;color:var(--t2);margin-top:1px">${done}/${total} даалгавар</div>
+        </div>
       </div>
       <div class="hdbody" id="hd${i}">
         <div style="margin-bottom:9px">${tasks.map(t=>`<div class="htr"><span style="font-size:13px">${h[t.id]?'✅':'⬜'}</span><span style="font-size:12px;font-weight:${h[t.id]?700:400};color:${h[t.id]?'var(--t1)':'var(--t2)'}">${t.icon} ${t.name}</span></div>`).join('')}</div>
@@ -1436,7 +1469,7 @@ async function loadAI(){
     <div style="font-size:10px;font-weight:800;color:#FDE68A;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">⚡ Нийт үнэлгээ</div>
     <div style="font-size:13px;color:#E0E0D8;line-height:1.7">
       Одоогоор <strong style="color:#4ADE80">${leader}</strong> тэргүүлж байна.<br>
-      <span style="color:#9A9A92">Хамтдаа алхвал хоёул ялна. Тэслэхгүй!</span>
+      <span style="color:#9A9A92">Хамтдаа хичээцгээе!</span>
     </div>
   </div>`;
 
