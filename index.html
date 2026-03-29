@@ -1267,7 +1267,7 @@ async function renderHistory(){
     const isToday=key===td();
     const dayLabel=isToday?`${i+1}-р өдөр · Өнөөдөр`:`${i+1}-р өдөр · ${fmtDate(key)}`;
     // Task checkmarks inline in collapsed header
-    const taskIcons=tasks.map(t=>h[t.id]?`<span style="font-size:13px" title="${t.name}">✅</span>`:`<span style="font-size:13px;opacity:.25" title="${t.name}">⬜</span>`).join('');
+    const taskIcons=tasks.map(t=>h[t.id]?`<span style="font-size:13px" title="${t.name}">✅</span>`:`<span style="font-size:13px;opacity:.25" title="${t.name}">✅</span>`).join('');
     html+=`<div class="hdc">
       <div class="hdh" onclick="toggleHist('hd${i}')">
         <div style="flex:1">
