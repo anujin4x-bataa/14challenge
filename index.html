@@ -548,7 +548,7 @@ async function initApp(){
   document.getElementById('day-ring').style.strokeDashoffset=circ*(1-dayNum/14);
   document.getElementById('day-num').textContent=dayNum;
   document.getElementById('hdr-day').textContent=`${dayNum}-р өдөр`;
-  document.getElementById('hero-dl').textContent=`${dayNum}-р өдөр · 14-с`;
+  document.getElementById('hero-dl').textContent=`${dayNum}-р өдөр · 14`;
 
   const mot=MOTIVATIONS[(dayNum-1)%MOTIVATIONS.length];
   document.getElementById('mot-txt').textContent=mot.t;
