@@ -289,7 +289,7 @@ body{font-family:var(--fn);background:var(--bg);color:var(--t1);min-height:100dv
           <div class="hero-rc"><div class="hero-rn" id="day-num">1</div><div class="hero-rs">ХОНОГ</div></div>
         </div>
         <div>
-          <div class="hero-badge" id="hero-dl">1-р өдөр · 14 өдөр </div>
+          <div class="hero-badge" id="hero-dl">1-р өдөр · 14-с</div>
           <div style="display:flex;align-items:baseline;gap:2px;margin-bottom:5px">
             <div class="hero-pct" id="hero-pct">0%</div>
             <div class="hero-pct-sub" id="hero-sub">· 0/7</div>
@@ -642,7 +642,7 @@ async function syncToSupabase(){
 
 // ==================== ACHIEVEMENTS ====================
 const ACHIEVEMENTS=[
-  {id:'start',     icon:'🌱',name:'Сорилт эхлэв',     desc:'Аппд нэвтэрч бүртгэлтэй болсон',    check:s=>s.totalDays>=1,   pts:20},
+  {id:'start',     icon:'🌱',name:'Сорилт эхлэлээ',     desc:'Аппд нэвтэрч бүртгэлтэй болсон',    check:s=>s.totalDays>=1,   pts:20},
   {id:'perfect1',  icon:'⭐',name:'Анхны 100%',          desc:'Нэг өдөр бүх task биелүүл',          check:s=>s.perfectDays>=1, pts:30},
   {id:'streak3',   icon:'🔥',name:'3 хоног тасралтгүй', desc:'Гурав дараалсан өдөр ≥50% биелүүл',  check:s=>s.streak>=3,      pts:40},
   {id:'nosugar3',  icon:'🚫',name:'3 хоног чихэргүй',   desc:'3 хоног чихэр идэхгүй байх',         check:s=>s.nosugarDays>=3, pts:30},
@@ -825,7 +825,7 @@ async function initApp(){
   document.getElementById('day-ring').style.strokeDashoffset=circ*(1-dayNum/14);
   document.getElementById('day-num').textContent=dayNum;
   document.getElementById('hdr-day').textContent=`${dayNum}-р өдөр`;
-  document.getElementById('hero-dl').textContent=`${dayNum}-р өдөр · 14 өдөр`;
+  document.getElementById('hero-dl').textContent=`${dayNum}-р өдөр · 14-с`;
 
   const mot=MOTIVATIONS[(dayNum-1)%MOTIVATIONS.length];
   document.getElementById('mot-txt').textContent=mot.t;
@@ -1074,7 +1074,7 @@ function renderExercise(){
   const listEl=document.getElementById('exercise-list');
   if(!titleEl||!listEl)return;
   titleEl.textContent=`💪 ${isBataa?'20':'15-20'} мин дасгал`;
-  const exercises=isBataa?[
+const exercises=isBataa?[
     {ic:'🏋️',n:'Сууж босох',sub:'Squat · 3×15'},
     {ic:'💪',n:'Суниах',sub:'Push-up · 3×10'},
     {ic:'🧘',n:'Доош харж хэвтэж байгаад биеэ өргөх',sub:'Plank · 3×30с'},
@@ -1105,7 +1105,7 @@ function renderPersonalMeals(){
   const bg=isBataa?'#EFF6FF':'#FDF2F8';
   const brd=isBataa?'#BFDBFE':'#F9A8D4';
   el.innerHTML=`<div style="background:${bg};border:1.5px solid ${brd};border-radius:13px;padding:14px;margin-bottom:11px">
-    <div style="font-size:10px;font-weight:800;color:${accent};text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">${u.avatar} ${u.name}н өдрийн хоол</div>
+    <div style="font-size:10px;font-weight:800;color:${accent};text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">${u.avatar} ${CU==='bataa'?'Батаагийн':'Бямбажавын'} өдрийн хоол</div>
     <div style="display:flex;flex-direction:column;gap:8px">
       <div style="display:flex;gap:10px"><div style="font-size:14px;flex-shrink:0;margin-top:1px">🌅</div><div><div style="font-size:10px;font-weight:800;color:var(--t2);margin-bottom:2px">ӨГЛӨӨ</div><div style="font-size:12px;color:var(--t1);line-height:1.6">${u.meals.morning}</div></div></div>
       <div style="display:flex;gap:10px"><div style="font-size:14px;flex-shrink:0;margin-top:1px">☀️</div><div><div style="font-size:10px;font-weight:800;color:var(--t2);margin-bottom:2px">ӨДӨР</div><div style="font-size:12px;color:var(--t1);line-height:1.6">${u.meals.lunch}</div></div></div>
@@ -1195,7 +1195,7 @@ async function renderBody(){
   if(entries.length>0){
     snapCard.style.display='block';
     const lat=entries[entries.length-1][1],prev=entries.length>1?entries[entries.length-2][1]:null;
-    const mets=[{k:'weight',l:'Жин',u:'кг',g:'down',ic:'⚖️'},{k:'fat',l:'Өөх%',u:'%',g:'down',ic:'🩺'},{k:'muscle',l:'Булчин',u:'кг',g:'up',ic:'💪'},{k:'visceral',l:'Дотор',u:'',g:'down',ic:'🫀'},{k:'water',l:'Ус%',u:'%',g:'up',ic:'💧'},{k:'bmr',l:'BMR',u:'ккал',g:'',ic:'🔥'}];
+    const mets=[{k:'weight',l:'Жин',u:'кг',g:'down',ic:'⚖️'},{k:'fat',l:'Өөх%',u:'%',g:'down',ic:'🩺'},{k:'muscle',l:'Булчин',u:'кг',g:'up',ic:'💪'},{k:'visceral',l:'Висцерал',u:'',g:'down',ic:'🫀'},{k:'water',l:'Ус%',u:'%',g:'up',ic:'💧'},{k:'bmr',l:'BMR',u:'ккал',g:'',ic:'🔥'}];
     snap.innerHTML=`<div class="bsg">${mets.map(m=>{
       const v=lat[m.k];if(!v)return '';
       const pv=prev?.[m.k];const diff=pv!=null?(v-pv).toFixed(1):null;
@@ -1267,7 +1267,7 @@ async function renderHistory(){
     const isToday=key===td();
     const dayLabel=isToday?`${i+1}-р өдөр · Өнөөдөр`:`${i+1}-р өдөр · ${fmtDate(key)}`;
     // Task checkmarks inline in collapsed header
-    const taskIcons=tasks.map(t=>h[t.id]?`<span style="font-size:13px" title="${t.name}">✅</span>`:`<span style="font-size:13px;opacity:.25" title="${t.name}">✅</span>`).join('');
+    const taskIcons=tasks.map(t=>h[t.id]?`<span style="font-size:13px" title="${t.name}">✅</span>`:`<span style="font-size:13px;opacity:.25" title="${t.name}">⬜</span>`).join('');
     html+=`<div class="hdc">
       <div class="hdh" onclick="toggleHist('hd${i}')">
         <div style="flex:1">
@@ -1291,10 +1291,13 @@ function toggleHist(id){const el=document.getElementById(id);if(el)el.classList.
 
 // COMPARE
 function calcStreakFor(habits){
-  let s=0;const today=new Date(td());const tasks=DEFAULT_TASKS;
+  let s=0;
+  const tp=td().split('-').map(Number);
+  const today=new Date(tp[0],tp[1]-1,tp[2]);
+  const tasks=DEFAULT_TASKS;
   for(let i=0;i<14;i++){
-    const d=new Date(today);d.setDate(d.getDate()-i);
-    const key=d.toISOString().split('T')[0];
+    const d=new Date(today);d.setDate(today.getDate()-i);
+    const key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
     const h=habits[key]||{};const done=tasks.filter(t=>h[t.id]).length;
     if(done>=Math.ceil(tasks.length/2))s++;else if(i>0)break;
   }
@@ -1308,17 +1311,34 @@ async function renderCompare(){
     const bm=await sbLoad(u,'bodymetrics')||{};
     allData[u]={habits,bm};
   }
+  // Load profile to get startDate for accurate day counting
+  const profB=await sbLoad('bataa','profile')||{};
+  const profY=await sbLoad('byambaa','profile')||{};
+  const profiles={bataa:profB,byambaa:profY};
+
   const stats={};
   for(const u of users){
     const habits=allData[u].habits;
     let totP=0,totD=0;const tc={};
     DEFAULT_TASKS.forEach(t=>tc[t.id]=0);
-    const today=new Date(td());
+    const prof=profiles[u];
+    // Use startDate if available, else count back from today
+    const todayParts=td().split('-').map(Number);
+    const todayLocal=new Date(todayParts[0],todayParts[1]-1,todayParts[2]);
+    let startLocal;
+    if(prof&&prof.startDate){
+      const [sy,sm,sd]=prof.startDate.split('-').map(Number);
+      startLocal=new Date(sy,sm-1,sd);
+    } else {
+      startLocal=new Date(todayLocal);startLocal.setDate(todayLocal.getDate()-13);
+    }
     for(let i=0;i<14;i++){
-      const d=new Date(today);d.setDate(d.getDate()-i);
-      const key=d.toISOString().split('T')[0];
+      const d=new Date(startLocal);d.setDate(startLocal.getDate()+i);
+      if(d>todayLocal) break;
+      const key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
       const h=habits[key]||{};const done=DEFAULT_TASKS.filter(t=>h[t.id]).length;
-      if(Object.keys(habits).includes(key)||done>0){totP+=done/DEFAULT_TASKS.length*100;totD++;}
+      // Count day if it has ANY data OR it's today/past (always count days up to today)
+      totP+=done/DEFAULT_TASKS.length*100;totD++;
       DEFAULT_TASKS.forEach(t=>{if(h[t.id])tc[t.id]++;});
     }
     stats[u]={avg:totD>0?Math.round(totP/totD):0,streak:calcStreakFor(habits),tc,days:totD};
@@ -1469,7 +1489,7 @@ async function loadAI(){
     <div style="font-size:10px;font-weight:800;color:#FDE68A;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">⚡ Нийт үнэлгээ</div>
     <div style="font-size:13px;color:#E0E0D8;line-height:1.7">
       Одоогоор <strong style="color:#4ADE80">${leader}</strong> тэргүүлж байна.<br>
-      <span style="color:#9A9A92">Хамтдаа хичээцгээе!</span>
+      <span style="color:#9A9A92">Хамтдаа алхвал хоёул ялна. Тэслэхгүй!</span>
     </div>
   </div>`;
 
