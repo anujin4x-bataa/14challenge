@@ -241,12 +241,12 @@ body{font-family:var(--fn);background:var(--bg);color:var(--t1);min-height:100dv
     <div class="auth-users">
       <button class="user-btn bataa" onclick="loginSuccess('bataa')">
         <div class="uav">👨</div>
-        <div><div class="un">Батаа</div><div class="us">Чихэр хасах + хөдөлгөөн = амжилт</div></div>
+        <div><div class="un">Батаа</div><div class="us">Чихэр тасарч, өөх буурна — 14 хоног л хангалттай</div></div>
         <div style="font-size:18px;margin-left:auto;color:var(--grn)">›</div>
       </button>
       <button class="user-btn byambaa" onclick="loginSuccess('byambaa')">
         <div class="uav">👩</div>
-        <div><div class="un">Бямбажав</div><div class="us">Хөдөлгөөн + уураг = амжилт</div></div>
+        <div><div class="un">Бямбажав</div><div class="us">Хөдөлж, уураг идэж, биеийг өөрчилнө</div></div>
         <div style="font-size:18px;margin-left:auto;color:var(--grn)">›</div>
       </button>
     </div>
@@ -440,8 +440,17 @@ body{font-family:var(--fn);background:var(--bg);color:var(--t1);min-height:100dv
     </div>
 
     <!-- HISTORY sub-tab -->
-    <div id="stats-hist">
-      <div class="card"><div id="history-list"></div></div>
+    <div id="stats-hist" style="display:flex;flex-direction:column;gap:12px">
+      <div id="hist-summary-card"></div>
+      <div class="card">
+        <div class="ctitle" id="hist-heatmap-title">14 хоногийн явц</div>
+        <div id="hist-heatmap" style="display:grid;grid-template-columns:repeat(14,1fr);gap:3px;margin-bottom:8px"></div>
+        <div style="display:flex;justify-content:space-between;margin-top:2px">
+          <div style="font-size:9px;color:var(--t3)" id="hist-start-lbl"></div>
+          <div style="font-size:9px;color:var(--t3)" id="hist-end-lbl"></div>
+        </div>
+      </div>
+      <div id="history-list"></div>
     </div>
 
     <!-- COMPARE sub-tab -->
@@ -453,6 +462,15 @@ body{font-family:var(--fn);background:var(--bg);color:var(--t1);min-height:100dv
       <div class="card"><div class="ctitle">Даалгаврын биелэлт</div><div id="task-bd"></div></div>
       <div class="card"><div class="ctitle">14 Хоногийн явц</div><div class="chart-wrap" style="height:185px"><canvas id="cmp-chart"></canvas></div></div>
       <div class="card"><div class="ctitle">Жин & Бие</div><div id="cmp-weight"></div></div>
+      <div class="card">
+        <div class="ctitle">😴 Нойрны оноо & Даалгаврын хамаарал</div>
+        <div style="display:flex;gap:4px;margin-bottom:10px">
+          <button onclick="switchSleepUser('bataa',this)" id="sl-btn-b" style="flex:1;padding:6px;border:none;border-radius:8px;font-size:11px;font-weight:800;cursor:pointer;font-family:var(--fn);background:var(--surf);color:var(--t1);box-shadow:0 1px 4px rgba(0,0,0,.08)">👨 Батаа</button>
+          <button onclick="switchSleepUser('byambaa',this)" id="sl-btn-y" style="flex:1;padding:6px;border:none;border-radius:8px;font-size:11px;font-weight:800;cursor:pointer;font-family:var(--fn);background:transparent;color:var(--t2)">👩 Бямбажав</button>
+        </div>
+        <div class="chart-wrap" style="height:180px"><canvas id="sleep-chart"></canvas></div>
+        <div id="sleep-stats" style="margin-top:10px;font-size:11px;color:var(--t2);text-align:center"></div>
+      </div>
       <div class="card">
         <div class="ctitle-row">
           <div class="ctitle">🤖 AI Анализ</div>
@@ -493,6 +511,74 @@ body{font-family:var(--fn);background:var(--bg);color:var(--t1);min-height:100dv
         <span style="font-size:10px;color:var(--t3)">Их</span>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- SLEEP MODAL -->
+<div class="modal-ov" id="sleep-modal">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="mhandle"></div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+      <span style="font-size:26px">🛌</span>
+      <div>
+        <div class="mtitle" style="margin-bottom:0">Нойрны мэдээлэл</div>
+        <div style="font-size:11px;color:var(--t2);margin-top:2px" id="sleep-modal-date"></div>
+      </div>
+    </div>
+    <!-- Sleep score -->
+    <div style="background:var(--surf2);border-radius:14px;padding:14px;margin-bottom:13px;border:1px solid var(--brd)">
+      <div style="font-size:10px;font-weight:800;color:var(--t3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px">Нойрны оноо</div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="flex:1">
+          <input type="range" id="sl-score" min="0" max="100" value="75"
+            oninput="document.getElementById('sl-score-val').textContent=this.value;updateSleepScoreColor(this.value)"
+            style="width:100%;accent-color:var(--grn)">
+        </div>
+        <div id="sl-score-val" style="font-size:26px;font-weight:900;min-width:44px;text-align:center;color:var(--grn)">75</div>
+      </div>
+      <div id="sl-score-lbl" style="font-size:11px;font-weight:700;color:var(--grn);margin-top:4px;text-align:center">Сайн нойр</div>
+    </div>
+    <!-- Duration inputs -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:13px">
+      <div style="text-align:center">
+        <div style="font-size:9px;font-weight:800;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Нийт нойр</div>
+        <div style="display:flex;align-items:center;justify-content:center;gap:3px">
+          <input type="number" id="sl-total" placeholder="7" min="0" max="12" step="0.5"
+            style="width:52px;padding:8px 4px;border:1.5px solid var(--brd);border-radius:10px;font-size:16px;font-weight:800;font-family:var(--fn);text-align:center;background:var(--surf);outline:none">
+          <span style="font-size:11px;color:var(--t2);font-weight:700">цаг</span>
+        </div>
+      </div>
+      <div style="text-align:center">
+        <div style="font-size:9px;font-weight:800;color:var(--blu);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Гүн нойр</div>
+        <div style="display:flex;align-items:center;justify-content:center;gap:3px">
+          <input type="number" id="sl-deep" placeholder="1.5" min="0" max="6" step="0.25"
+            style="width:52px;padding:8px 4px;border:1.5px solid #BFDBFE;border-radius:10px;font-size:16px;font-weight:800;font-family:var(--fn);text-align:center;background:#EFF6FF;outline:none;color:var(--blu)">
+          <span style="font-size:11px;color:var(--t2);font-weight:700">цаг</span>
+        </div>
+      </div>
+      <div style="text-align:center">
+        <div style="font-size:9px;font-weight:800;color:#7C3AED;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">REM нойр</div>
+        <div style="display:flex;align-items:center;justify-content:center;gap:3px">
+          <input type="number" id="sl-rem" placeholder="2" min="0" max="6" step="0.25"
+            style="width:52px;padding:8px 4px;border:1.5px solid #DDD6FE;border-radius:10px;font-size:16px;font-weight:800;font-family:var(--fn);text-align:center;background:#F5F3FF;outline:none;color:#7C3AED">
+          <span style="font-size:11px;color:var(--t2);font-weight:700">цаг</span>
+        </div>
+      </div>
+    </div>
+    <!-- Sleep bar visualization -->
+    <div style="margin-bottom:14px">
+      <div style="display:flex;height:12px;border-radius:6px;overflow:hidden;gap:1px" id="sl-bar-vis">
+        <div id="sl-bar-light" style="background:var(--surf3);flex:1;border-radius:6px 0 0 6px"></div>
+        <div id="sl-bar-deep" style="background:var(--blu);width:0"></div>
+        <div id="sl-bar-rem" style="background:#7C3AED;width:0;border-radius:0 6px 6px 0"></div>
+      </div>
+      <div style="display:flex;gap:12px;margin-top:5px;justify-content:center">
+        <span style="font-size:9px;font-weight:700;color:var(--t3)">⬜ Хөнгөн</span>
+        <span style="font-size:9px;font-weight:700;color:var(--blu)">🟦 Гүн</span>
+        <span style="font-size:9px;font-weight:700;color:#7C3AED">🟣 REM</span>
+      </div>
+    </div>
+    <button class="btn-p" onclick="saveSleepData()">Хадгалах ✓</button>
   </div>
 </div>
 
@@ -634,7 +720,7 @@ async function sbLoad(u,t){
 async function syncToSupabase(){
   if(!sb){toast('Supabase холбогдоогүй');return;}
   toast('☁️ Sync хийж байна...');
-  for(const t of['habits','meals','bodymetrics','weights','customtasks','savedfoods','profile']){
+  for(const t of['habits','meals','bodymetrics','weights','customtasks','savedfoods','profile','sleep']){
     const d=LS.g(CU,t);if(d)await sbSave(CU,t,d);
   }
   toast('✅ Sync амжилттай!');
@@ -876,14 +962,79 @@ async function renderTasks(){
 }
 
 async function toggleTask(id){
+  if(id==='sleep'){
+    // Sleep task: open modal to enter sleep data instead of simple toggle
+    openSleepModal();
+    return;
+  }
   const habits=await sbLoad(CU,'habits')||{};
   if(!habits[td()])habits[td()]={};
   habits[td()][id]=!habits[td()][id];
   await sbSave(CU,'habits',habits);
   await renderTasks();await renderScore();
   if(habits[td()][id]){const t=getTasks().find(x=>x.id===id);if(t)toast(`✅ ${t.name}!`);}
-  // Check for new achievements silently
   checkNewAch();
+}
+
+async function openSleepModal(){
+  const sleepData=await sbLoad(CU,'sleep')||{};
+  const todaySleep=sleepData[td()]||{};
+  document.getElementById('sl-score').value=todaySleep.score||75;
+  document.getElementById('sl-score-val').textContent=todaySleep.score||75;
+  document.getElementById('sl-total').value=todaySleep.total||'';
+  document.getElementById('sl-deep').value=todaySleep.deep||'';
+  document.getElementById('sl-rem').value=todaySleep.rem||'';
+  document.getElementById('sleep-modal-date').textContent=fmtDate(td())+' · нойрны дэлгэрэнгүй';
+  updateSleepScoreColor(todaySleep.score||75);
+  updateSleepBar();
+  document.getElementById('sleep-modal').classList.add('show');
+  // Input listeners for bar update
+  ['sl-total','sl-deep','sl-rem'].forEach(id=>{
+    document.getElementById(id).oninput=updateSleepBar;
+  });
+}
+
+function updateSleepScoreColor(v){
+  v=parseInt(v);
+  const color=v>=80?'var(--grn)':v>=60?'var(--org)':'var(--red)';
+  const lbl=v>=85?'Маш сайн нойр':v>=70?'Сайн нойр':v>=50?'Дунд зэрэг':'Муу нойр';
+  document.getElementById('sl-score-val').style.color=color;
+  document.getElementById('sl-score-lbl').textContent=lbl;
+  document.getElementById('sl-score-lbl').style.color=color;
+}
+
+function updateSleepBar(){
+  const total=parseFloat(document.getElementById('sl-total').value)||0;
+  const deep=parseFloat(document.getElementById('sl-deep').value)||0;
+  const rem=parseFloat(document.getElementById('sl-rem').value)||0;
+  if(!total){return;}
+  const light=Math.max(0,total-deep-rem);
+  const dp=total>0?deep/total*100:0;
+  const rp=total>0?rem/total*100:0;
+  const lp=total>0?light/total*100:0;
+  document.getElementById('sl-bar-light').style.flexBasis=lp+'%';
+  document.getElementById('sl-bar-deep').style.width=dp+'%';
+  document.getElementById('sl-bar-rem').style.width=rp+'%';
+}
+
+async function saveSleepData(){
+  const score=parseInt(document.getElementById('sl-score').value)||75;
+  const total=parseFloat(document.getElementById('sl-total').value)||null;
+  const deep=parseFloat(document.getElementById('sl-deep').value)||null;
+  const rem=parseFloat(document.getElementById('sl-rem').value)||null;
+  // Save sleep data
+  const sleepData=await sbLoad(CU,'sleep')||{};
+  sleepData[td()]={score,total,deep,rem};
+  await sbSave(CU,'sleep',sleepData);
+  // Mark sleep task as done
+  const habits=await sbLoad(CU,'habits')||{};
+  if(!habits[td()])habits[td()]={};
+  habits[td()].sleep=true;
+  await sbSave(CU,'habits',habits);
+  document.getElementById('sleep-modal').classList.remove('show');
+  await renderTasks();await renderScore();
+  checkNewAch();
+  toast(`✅ Нойрны мэдээлэл хадгаллаа · ${score} оноо`);
 }
 
 async function renderScore(){
@@ -928,6 +1079,7 @@ function switchStatsSub(sub){
     bc.style.background='var(--surf)';bc.style.color='var(--t1)';bc.style.boxShadow='0 1px 4px rgba(0,0,0,.08)';
     bh.style.background='transparent';bh.style.color='var(--t2)';bh.style.boxShadow='none';
     renderCompare();
+    renderSleepChart();
   }
 }
 
@@ -1074,7 +1226,7 @@ function renderExercise(){
   const listEl=document.getElementById('exercise-list');
   if(!titleEl||!listEl)return;
   titleEl.textContent=`💪 ${isBataa?'20':'15-20'} мин дасгал`;
-const exercises=isBataa?[
+  const exercises=isBataa?[
     {ic:'🏋️',n:'Сууж босох',sub:'Squat · 3×15'},
     {ic:'💪',n:'Суниах',sub:'Push-up · 3×10'},
     {ic:'🧘',n:'Доош харж хэвтэж байгаад биеэ өргөх',sub:'Plank · 3×30с'},
@@ -1173,6 +1325,7 @@ async function delSaved(i){
 }
 function closeSF(){document.getElementById('sf-modal').classList.remove('show');}
 document.getElementById('sf-modal').addEventListener('click',e=>{if(e.target.id==='sf-modal')closeSF();});
+document.getElementById('sleep-modal').addEventListener('click',e=>{if(e.target.id==='sleep-modal')document.getElementById('sleep-modal').classList.remove('show');});
 
 // BODY
 async function saveBody(){
@@ -1244,50 +1397,199 @@ async function renderBody(){
 async function renderHistory(){
   const habits=await sbLoad(CU,'habits')||{};
   const meals=await sbLoad(CU,'meals')||{};
+  const sleepData=await sbLoad(CU,'sleep')||{};
   const tasks=getTasks();
   const list=document.getElementById('history-list');
   const profile=await sbLoad(CU,'profile');
-  if(!profile||!profile.startDate){list.innerHTML='<div class="empty-st"><div class="eic">📅</div><p>Өгөгдөл байхгүй</p></div>';return;}
+  if(!profile||!profile.startDate){
+    list.innerHTML='<div class="empty-st"><div class="eic">📅</div><p>Өгөгдөл байхгүй</p></div>';
+    return;
+  }
 
+  const u=USERS[CU];
+  const isBataa=CU==='bataa';
   const [sy,sm,sd]=profile.startDate.split('-').map(Number);
   const start=new Date(sy,sm-1,sd);
   const [ty,tm,tday]=td().split('-').map(Number);
   const today=new Date(ty,tm-1,tday);
-  let html='';
 
+  // Build day data array
+  const days=[];
   for(let i=0;i<14;i++){
-    const d=new Date(start);
-    d.setDate(start.getDate()+i);
-    if(d>today) break; // future days skip
-    const key=d.toISOString().split('T')[0];
-    const h=habits[key]||{},dm=meals[key]||[];
-    const done=tasks.filter(t=>h[t.id]).length,total=tasks.length;
-    const pct=total>0?Math.round(done/total*100):0;
-    const color=pct>=80?'var(--grn)':pct>=50?'var(--org)':'var(--t3)';
-    const isToday=key===td();
-    const dayLabel=isToday?`${i+1}-р өдөр · Өнөөдөр`:`${i+1}-р өдөр · ${fmtDate(key)}`;
-    // Task checkmarks inline in collapsed header
-    const taskIcons=tasks.map(t=>h[t.id]?`<span style="font-size:13px" title="${t.name}">✅</span>`:`<span style="font-size:13px;opacity:.25" title="${t.name}">⬜</span>`).join('');
-    html+=`<div class="hdc">
-      <div class="hdh" onclick="toggleHist('hd${i}')">
-        <div style="flex:1">
-          <div class="hdd">${dayLabel}</div>
-          <div style="display:flex;gap:2px;margin-top:5px;flex-wrap:wrap">${taskIcons}</div>
-        </div>
-        <div style="text-align:right;flex-shrink:0;padding-left:8px">
-          <div class="hdsc" style="color:${color}">${pct>0?pct+'%':'—'}</div>
-          <div style="font-size:9px;color:var(--t2);margin-top:1px">${done}/${total} даалгавар</div>
-        </div>
+    const d=new Date(start);d.setDate(start.getDate()+i);
+    if(d>today) break;
+    const key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    const h=habits[key]||{},dm=meals[key]||[],sl=sleepData[key]||null;
+    const done=tasks.filter(t=>h[t.id]).length;
+    const pct=tasks.length>0?Math.round(done/tasks.length*100):0;
+    days.push({i,d,key,h,dm,sl,done,pct,isToday:key===td()});
+  }
+
+  // ── SUMMARY CARD ──
+  const totalDays=days.length;
+  const perfectDays=days.filter(d=>d.pct===100).length;
+  const avgPct=totalDays?Math.round(days.reduce((s,d)=>s+d.pct,0)/totalDays):0;
+  const bestStreak=(()=>{let mx=0,cur=0;days.forEach(d=>{if(d.pct>=50)cur++;else cur=0;mx=Math.max(mx,cur);});return mx;})();
+  const totalKcal=days.reduce((s,d)=>s+d.dm.reduce((ss,m)=>ss+(m.kcal||0),0),0);
+  const sleepScores=days.map(d=>d.sl?.score).filter(Boolean);
+  const avgSleep=sleepScores.length?Math.round(sleepScores.reduce((a,b)=>a+b,0)/sleepScores.length):null;
+  const accent=isBataa?'var(--blu)':'#BE185D';
+  const acBg=isBataa?'#EFF6FF':'#FDF2F8';
+
+  const sumCard=document.getElementById('hist-summary-card');
+  sumCard.className='card';
+  sumCard.innerHTML=`
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+      <div style="width:46px;height:46px;border-radius:14px;background:${acBg};display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0">${u.avatar}</div>
+      <div>
+        <div style="font-size:15px;font-weight:900;color:var(--t1)">${u.name}</div>
+        <div style="font-size:11px;color:var(--t2);margin-top:1px">${totalDays}-р өдөр · ${u.strategy}</div>
       </div>
-      <div class="hdbody" id="hd${i}">
-        <div style="margin-bottom:9px">${tasks.map(t=>`<div class="htr"><span style="font-size:13px">${h[t.id]?'✅':'⬜'}</span><span style="font-size:12px;font-weight:${h[t.id]?700:400};color:${h[t.id]?'var(--t1)':'var(--t2)'}">${t.icon} ${t.name}</span></div>`).join('')}</div>
-        ${dm.length?`<div style="border-top:1px solid var(--brd);padding-top:7px"><div style="font-size:9px;font-weight:800;color:var(--t3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px">Хоол</div>${dm.map(m=>`<div class="hmr"><span style="font-size:9px;background:var(--grns);color:var(--grn);font-weight:800;padding:2px 5px;border-radius:5px;margin-right:5px">${m.type}</span>${m.name}${m.kcal?` <span style="color:var(--t3)">${m.kcal}ккал</span>`:''}</div>`).join('')}</div>`:''}
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+      <div style="text-align:center;padding:10px 6px;background:${avgPct>=70?'var(--grns)':'var(--surf2)'};border-radius:12px;border:1px solid ${avgPct>=70?'var(--grnm)':'var(--brd)'}">
+        <div style="font-size:20px;font-weight:900;color:${avgPct>=70?'var(--grn)':'var(--t1)'}">${avgPct}%</div>
+        <div style="font-size:9px;color:var(--t2);font-weight:800;margin-top:2px;text-transform:uppercase;letter-spacing:.3px">Дундаж</div>
+      </div>
+      <div style="text-align:center;padding:10px 6px;background:var(--surf2);border-radius:12px;border:1px solid var(--brd)">
+        <div style="font-size:20px;font-weight:900;color:var(--t1)">${perfectDays}</div>
+        <div style="font-size:9px;color:var(--t2);font-weight:800;margin-top:2px;text-transform:uppercase;letter-spacing:.3px">100% өдөр</div>
+      </div>
+      <div style="text-align:center;padding:10px 6px;background:var(--ylws);border-radius:12px;border:1px solid #E9D08A">
+        <div style="font-size:20px;font-weight:900;color:var(--ylw)">🔥${bestStreak}</div>
+        <div style="font-size:9px;color:var(--t2);font-weight:800;margin-top:2px;text-transform:uppercase;letter-spacing:.3px">Streak</div>
+      </div>
+      <div style="text-align:center;padding:10px 6px;background:${avgSleep?(avgSleep>=70?'#F5F3FF':'var(--surf2)'):'var(--surf2)'};border-radius:12px;border:1px solid ${avgSleep?'#DDD6FE':'var(--brd)'}">
+        <div style="font-size:20px;font-weight:900;color:${avgSleep?'#7C3AED':'var(--t3)'}">${avgSleep??'—'}</div>
+        <div style="font-size:9px;color:var(--t2);font-weight:800;margin-top:2px;text-transform:uppercase;letter-spacing:.3px">Нойр</div>
       </div>
     </div>`;
+
+  // ── HEATMAP ──
+  const hm=document.getElementById('hist-heatmap');
+  hm.innerHTML='';
+  for(let i=0;i<14;i++){
+    const day=days[i];
+    const cell=document.createElement('div');
+    if(!day){
+      cell.style.cssText='aspect-ratio:1;border-radius:5px;background:var(--surf3);opacity:.25';
+    } else {
+      const p=day.pct;
+      const bg=p===0?'var(--surf3)':p<50?'#FED7AA':p<80?'#9FDCC0':'var(--grn)';
+      const isT=day.isToday;
+      cell.style.cssText=`aspect-ratio:1;border-radius:5px;background:${bg};cursor:pointer;position:relative;${isT?'box-shadow:0 0 0 2px var(--grn)':''}`;
+      cell.title=`${i+1}-р өдөр · ${p}%`;
+      cell.onclick=()=>toggleHist('hd'+i);
+    }
+    hm.appendChild(cell);
   }
-  list.innerHTML=html||'<div class="empty-st"><div class="eic">📅</div><p>Өгөгдөл байхгүй</p></div>';
+  const sl=days[0];const el=days[days.length-1];
+  if(sl)document.getElementById('hist-start-lbl').textContent=fmtDate(sl.key);
+  if(el)document.getElementById('hist-end-lbl').textContent=el.isToday?'Өнөөдөр':fmtDate(el.key);
+
+  // ── DAY CARDS ──
+  list.innerHTML='';
+  [...days].reverse().forEach(day=>{
+    const {i,h,dm,sl,done,pct,isToday}=day;
+    const color=pct===100?'var(--grn)':pct>=50?'var(--org)':'var(--t3)';
+    const ringColor=pct===100?'#1A9156':pct>=50?'#D97706':'#CCCBC4';
+    const circumference=56.5;
+    const offset=circumference*(1-pct/100);
+    const dayLabel=isToday?`${i+1}-р өдөр · Өнөөдөр`:`${i+1}-р өдөр · ${fmtDate(day.key)}`;
+
+    const card=document.createElement('div');
+    card.style.cssText='background:var(--surf);border-radius:16px;border:1px solid var(--brd);overflow:hidden;box-shadow:0 1px 6px rgba(0,0,0,.055);margin-bottom:10px';
+    card.innerHTML=`
+      <!-- Collapsed header — always visible -->
+      <div onclick="toggleHistCard(this)" style="padding:14px 15px;cursor:pointer;display:flex;align-items:center;gap:13px;-webkit-tap-highlight-color:transparent">
+        <!-- Donut ring -->
+        <div style="position:relative;width:46px;height:46px;flex-shrink:0">
+          <svg width="46" height="46" viewBox="0 0 46 46" style="transform:rotate(-90deg)">
+            <circle cx="23" cy="23" r="9" fill="none" stroke="var(--surf3)" stroke-width="4.5"/>
+            <circle cx="23" cy="23" r="9" fill="none" stroke="${ringColor}" stroke-width="4.5"
+              stroke-linecap="round" stroke-dasharray="${circumference}" stroke-dashoffset="${offset}"
+              style="transition:stroke-dashoffset .4s"/>
+          </svg>
+          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:${color}">${pct===100?'✓':pct+'%'}</div>
+        </div>
+        <!-- Info -->
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:800;color:var(--t1);margin-bottom:5px">${dayLabel}</div>
+          <!-- Task pills row -->
+          <div style="display:flex;gap:3px;flex-wrap:wrap">
+            ${tasks.map(t=>`<div style="padding:2px 6px;border-radius:6px;font-size:10px;font-weight:700;background:${h[t.id]?'var(--grns)':'var(--surf2)'};color:${h[t.id]?'var(--grn)':'var(--t3)'};border:1px solid ${h[t.id]?'var(--grnm)':'var(--brd)'};white-space:nowrap">${t.icon}</div>`).join('')}
+          </div>
+        </div>
+        <!-- Right: done count + chevron -->
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-size:11px;font-weight:700;color:${color}">${done}/${tasks.length}</div>
+          ${sl?`<div style="font-size:10px;color:#7C3AED;font-weight:700;margin-top:2px">😴${sl.score}</div>`:''}
+          <div style="font-size:16px;color:var(--t3);margin-top:4px;transition:transform .2s" class="hist-chev">›</div>
+        </div>
+      </div>
+      <!-- Expanded body -->
+      <div class="hist-body" style="display:none;border-top:1px solid var(--brd)">
+        <!-- Task detail -->
+        <div style="padding:12px 15px;display:grid;grid-template-columns:1fr 1fr;gap:6px">
+          ${tasks.map(t=>`<div style="display:flex;align-items:center;gap:7px;padding:8px 10px;border-radius:10px;background:${h[t.id]?'var(--grns)':'var(--surf2)'};border:1px solid ${h[t.id]?'var(--grnm)':'var(--brd)'}">
+            <span style="font-size:16px">${t.icon}</span>
+            <div style="min-width:0">
+              <div style="font-size:11px;font-weight:700;color:${h[t.id]?'var(--grn)':'var(--t2)'};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${t.name}</div>
+              ${h[t.id]?'<div style="font-size:9px;color:var(--grn);font-weight:700">✓ Биелсэн</div>':'<div style="font-size:9px;color:var(--t3)">Биелээгүй</div>'}
+            </div>
+          </div>`).join('')}
+        </div>
+        ${sl?`<div style="padding:0 15px 12px">
+          <div style="background:#F5F3FF;border-radius:11px;padding:11px 13px;border:1px solid #DDD6FE">
+            <div style="font-size:9px;font-weight:800;color:#7C3AED;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">😴 Нойрны мэдээлэл</div>
+            <div style="display:flex;gap:10px;justify-content:space-around">
+              <div style="text-align:center"><div style="font-size:18px;font-weight:900;color:#7C3AED">${sl.score}</div><div style="font-size:9px;color:var(--t2);font-weight:700">Оноо</div></div>
+              ${sl.total?`<div style="text-align:center"><div style="font-size:18px;font-weight:900;color:var(--t1)">${sl.total}ц</div><div style="font-size:9px;color:var(--t2);font-weight:700">Нийт</div></div>`:''}
+              ${sl.deep?`<div style="text-align:center"><div style="font-size:18px;font-weight:900;color:var(--blu)">${sl.deep}ц</div><div style="font-size:9px;color:var(--t2);font-weight:700">Гүн</div></div>`:''}
+              ${sl.rem?`<div style="text-align:center"><div style="font-size:18px;font-weight:900;color:#7C3AED">${sl.rem}ц</div><div style="font-size:9px;color:var(--t2);font-weight:700">REM</div></div>`:''}
+            </div>
+          </div>
+        </div>`:''}
+        ${dm.length?`<div style="padding:0 15px 12px;border-top:1px solid var(--brd);margin-top:${sl?0:0}px">
+          <div style="font-size:9px;font-weight:800;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;padding-top:11px;margin-bottom:8px">🥗 Хоол</div>
+          <div style="display:flex;flex-direction:column;gap:5px">
+            ${dm.map(m=>`<div style="display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--surf2);border-radius:9px">
+              <div style="font-size:9px;font-weight:800;color:var(--grn);background:var(--grns);padding:2px 6px;border-radius:6px;flex-shrink:0">${m.type}</div>
+              <div style="flex:1;font-size:12px;font-weight:600;color:var(--t1)">${m.name}</div>
+              ${m.kcal?`<div style="font-size:11px;font-weight:800;color:var(--t2)">${m.kcal}ккал</div>`:''}
+            </div>`).join('')}
+          </div>
+        </div>`:''}
+      </div>`;
+    list.appendChild(card);
+  });
+
+  if(!days.length) list.innerHTML='<div class="empty-st"><div class="eic">📅</div><p>Өгөгдөл байхгүй</p></div>';
 }
-function toggleHist(id){const el=document.getElementById(id);if(el)el.classList.toggle('open');}
+
+function toggleHistCard(header){
+  const body=header.nextElementSibling;
+  const chev=header.querySelector('.hist-chev');
+  const open=body.style.display==='none';
+  body.style.display=open?'block':'none';
+  if(chev) chev.style.transform=open?'rotate(90deg)':'';
+}
+
+function toggleHist(i){
+  // Scroll to and open card i from heatmap click
+  const cards=document.querySelectorAll('#history-list > div');
+  const idx=cards.length-1-i; // reversed order
+  if(cards[idx]){
+    const header=cards[idx].querySelector('div');
+    const body=cards[idx].querySelector('.hist-body');
+    const chev=header?.querySelector('.hist-chev');
+    if(body&&body.style.display==='none'){
+      body.style.display='block';
+      if(chev) chev.style.transform='rotate(90deg)';
+    }
+    cards[idx].scrollIntoView({behavior:'smooth',block:'nearest'});
+  }
+}
 
 // COMPARE
 function calcStreakFor(habits){
@@ -1489,7 +1791,7 @@ async function loadAI(){
     <div style="font-size:10px;font-weight:800;color:#FDE68A;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">⚡ Нийт үнэлгээ</div>
     <div style="font-size:13px;color:#E0E0D8;line-height:1.7">
       Одоогоор <strong style="color:#4ADE80">${leader}</strong> тэргүүлж байна.<br>
-      <span style="color:#9A9A92">Хамтдаа хичээцгээе!</span>
+      <span style="color:#9A9A92">Хамтдаа алхвал хоёул ялна. Тэслэхгүй!</span>
     </div>
   </div>`;
 
@@ -1545,6 +1847,123 @@ async function clearAllData(){
 
   toast('✅ Бүх дата устгагдлаа');
   setTimeout(()=>{ logout(); }, 1200);
+}
+
+// ==================== SLEEP CHART ====================
+let sleepChart=null,sleepChartUser='bataa';
+
+function switchSleepUser(u,btn){
+  sleepChartUser=u;
+  document.getElementById('sl-btn-b').style.background=u==='bataa'?'var(--surf)':'transparent';
+  document.getElementById('sl-btn-b').style.color=u==='bataa'?'var(--t1)':'var(--t2)';
+  document.getElementById('sl-btn-b').style.boxShadow=u==='bataa'?'0 1px 4px rgba(0,0,0,.08)':'none';
+  document.getElementById('sl-btn-y').style.background=u==='byambaa'?'var(--surf)':'transparent';
+  document.getElementById('sl-btn-y').style.color=u==='byambaa'?'var(--t1)':'var(--t2)';
+  document.getElementById('sl-btn-y').style.boxShadow=u==='byambaa'?'0 1px 4px rgba(0,0,0,.08)':'none';
+  renderSleepChart();
+}
+
+async function renderSleepChart(){
+  const profile=await sbLoad(sleepChartUser,'profile');
+  const sleepData=await sbLoad(sleepChartUser,'sleep')||{};
+  const habits=await sbLoad(sleepChartUser,'habits')||{};
+  const tasks=DEFAULT_TASKS;
+
+  // Build 14-day dataset from startDate
+  const labels=[],scores=[],taskPcts=[];
+  let startDate;
+  if(profile&&profile.startDate){
+    const [sy,sm,sd]=profile.startDate.split('-').map(Number);
+    startDate=new Date(sy,sm-1,sd);
+  } else {
+    startDate=new Date();startDate.setDate(startDate.getDate()-13);
+  }
+  const todayParts=td().split('-').map(Number);
+  const todayLocal=new Date(todayParts[0],todayParts[1]-1,todayParts[2]);
+
+  for(let i=0;i<14;i++){
+    const d=new Date(startDate);d.setDate(startDate.getDate()+i);
+    if(d>todayLocal) break;
+    const key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    const sl=sleepData[key];
+    const h=habits[key]||{};
+    const done=tasks.filter(t=>h[t.id]).length;
+    const pct=tasks.length>0?Math.round(done/tasks.length*100):0;
+    labels.push(`${i+1}`);
+    scores.push(sl?sl.score:null);
+    taskPcts.push(pct);
+  }
+
+  // Stats
+  const validScores=scores.filter(s=>s!==null);
+  const avgScore=validScores.length?Math.round(validScores.reduce((a,b)=>a+b,0)/validScores.length):null;
+  const statsEl=document.getElementById('sleep-stats');
+  if(avgScore!==null){
+    const corr=calcCorrelation(scores,taskPcts);
+    statsEl.innerHTML=`Дундаж нойрны оноо: <strong>${avgScore}</strong> · Даалгавартай хамаарал: <strong style="color:${corr>0.3?'var(--grn)':corr>0?'var(--org)':'var(--red)'}">${corr>0.3?'эерэг':corr>0?'бага эерэг':'сул'}</strong>`;
+  } else {
+    statsEl.innerHTML='Нойрны мэдээлэл бүртгэгдээгүй байна';
+  }
+
+  if(sleepChart){sleepChart.destroy();sleepChart=null;}
+  const ctx=document.getElementById('sleep-chart').getContext('2d');
+  sleepChart=new Chart(ctx,{
+    type:'line',
+    data:{
+      labels,
+      datasets:[
+        {
+          label:'Нойрны оноо',
+          data:scores,
+          borderColor:'#7C3AED',
+          backgroundColor:'rgba(124,58,237,.08)',
+          borderWidth:2.5,
+          pointRadius:4,
+          pointBackgroundColor:'#7C3AED',
+          fill:false,
+          tension:.4,
+          yAxisID:'y',
+          spanGaps:false,
+        },
+        {
+          label:'Даалгаврын %',
+          data:taskPcts,
+          borderColor:'var(--grn)',
+          backgroundColor:'rgba(26,145,86,.07)',
+          borderWidth:2,
+          pointRadius:3,
+          pointBackgroundColor:'var(--grn)',
+          fill:true,
+          tension:.4,
+          yAxisID:'y',
+        }
+      ]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      interaction:{mode:'index',intersect:false},
+      plugins:{
+        legend:{position:'top',labels:{font:{size:9},boxWidth:9,usePointStyle:true}},
+        tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${ctx.raw??'—'}${ctx.datasetIndex===0?' оноо':'%'}`}}
+      },
+      scales:{
+        y:{min:0,max:100,grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:{size:9},callback:v=>v+''}},
+        x:{grid:{display:false},ticks:{font:{size:9}}}
+      }
+    }
+  });
+}
+
+function calcCorrelation(xs,ys){
+  const pairs=xs.map((x,i)=>([x,ys[i]])).filter(([x])=>x!==null);
+  if(pairs.length<3) return 0;
+  const n=pairs.length;
+  const mx=pairs.reduce((s,[x])=>s+x,0)/n;
+  const my=pairs.reduce((s,[,y])=>s+y,0)/n;
+  const num=pairs.reduce((s,[x,y])=>s+(x-mx)*(y-my),0);
+  const den=Math.sqrt(pairs.reduce((s,[x])=>s+(x-mx)**2,0)*pairs.reduce((s,[,y])=>s+(y-my)**2,0));
+  return den===0?0:Math.round(num/den*100)/100;
 }
 
 // ==================== WIN ====================
